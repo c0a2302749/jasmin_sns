@@ -1,6 +1,8 @@
 """rng.py — F-02: マスターシードから4本の乱数ストリームを派生させる。
 
-対応決定: NFR-2（乱数ストリームの分離）, FR-G3（ガバナンス層は乱数を消費しない）
+設計決定参照:
+- NFR-2（乱数ストリームの分離）
+- FR-G3（ガバナンス層は乱数を消費しない）
 
 Generator を生成するのはこのファイルだけにする。他のモジュールは
 streams() が返した Generator を受け取って使うだけで、自前で
@@ -20,6 +22,8 @@ def streams(master_seed: int) -> dict[str, np.random.Generator]:
 
     numpy.random.SeedSequence.spawn を使うことで、各ストリームが
     どれだけ乱数を消費してもストリーム間で影響しない（NFR-2）。
+    spawn の順序は STREAM_NAMES 順に固定されており、順序を変えると
+    再現性が壊れるため変更してはならない。
 
     Args:
         master_seed (int): 親となるマスターシード。

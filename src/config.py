@@ -1,6 +1,6 @@
 """config.py — F-01: 設定を読み、検査し、実行IDを作る。
 
-対応決定:
+設計決定参照:
 - NFR-5: 設定の外部化（値の正典は configs/*.yaml とし、コード内にデフォルト値を持たない）
 - A3: S の値域と警告 (regime: bistable)
 - 1.4: 検査ルール (エラー／警告の2段階判定)
@@ -165,6 +165,8 @@ def _check_and_warn(cfg_dict: dict[str, Any]) -> list[str]:
 
     読み込んだ設定辞書に対して値の妥当性を検証し、致命的なエラーがある場合は
     ConfigError を送出する。許容可能だが想定外の値については警告メッセージを生成する。
+    警告条件: S > 2.0（bistable レジーム, A3）、k_react ∉ [0, 2]（A9 感度範囲外）、
+    n_seeds < 5（信頼区間の精度不足）。
 
     Args:
         cfg_dict: YAMLから読み込んだ設定の辞書。
@@ -179,7 +181,7 @@ def _check_and_warn(cfg_dict: dict[str, Any]) -> list[str]:
         ConfigError: stopping.update_mode が "gauss_seidel" か "jacobi" でない場合。
 
     Returns:
-        警告メッセージのリスト。
+        警告メッセージのリスト（エラーなしの場合のみ到達する）。
     """
     # 検査と警告
     warnings: list[str] = []
@@ -237,12 +239,17 @@ def _check_and_warn(cfg_dict: dict[str, Any]) -> list[str]:
 def load(path: str | Path) -> Config:
     """YAMLを読み込み、検査してConfigを返す。警告はConfig.warningsに含める。
 
+    ペルソナ表のパスは config ファイルの親ディレクトリ基準で解決する
+    （cwd 非依存, NFR-7）。table_path 解決後の直接構築ではこの検査を
+    素通りできるため、Config は必ず本関数経由で生成すること。
+
     Args:
         path: 読み込むYAML設定ファイルのパス。
 
     Raises:
         ConfigError: 指定された設定ファイルが存在しない場合。
         ConfigError: 指定されたペルソナ設定ファイルが存在しない場合。
+        ConfigError: _check_and_warn の検査条件に違反した場合。
 
     Returns:
         読み込み、検証、および解決された設定を含むConfigオブジェクト。
@@ -290,6 +297,12 @@ def load(path: str | Path) -> Config:
 def run_id(config: Config) -> str:
     """日時と設定ハッシュから一意な実行IDを作る。
 
+    ハッシュ対象は実験条件を表す8セクション（model〜logging）のみ。
+    warnings / source_path / personas.table_path は除外するため、
+    同一内容のYAMLを別名・別場所から読み込んでも末尾4桁は変わらない。
+    設計③の run_id(config, git_hash) とは異なり git ハッシュは含めない。
+    4桁ハッシュは衝突しうるため一意性の主軸は日時側にある。
+
     Args:
         config: ハッシュ生成の元となるConfigオブジェクト。
 
@@ -298,8 +311,21 @@ def run_id(config: Config) -> str:
     """
     now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # config 全体をハッシュ化（4桁）
-    payload = json.dumps(asdict(config), sort_keys=True).encode("utf-8")
+    # 実験条件のみをハッシュ化する（table_path は絶対パスで環境依存のため除外）
+    condition = {
+        "model": asdict(config.model),
+        "network": asdict(config.network),
+        "init_opinion": asdict(config.init_opinion),
+        "personas": {
+            "table": config.personas.table,
+            "concentration_nu": config.personas.concentration_nu,
+        },
+        "experiment": asdict(config.experiment),
+        "stopping": asdict(config.stopping),
+        "metrics": asdict(config.metrics),
+        "logging": asdict(config.logging),
+    }
+    payload = json.dumps(condition, sort_keys=True).encode("utf-8")
     digest = hashlib.sha256(payload).hexdigest()[:4]
 
     return f"run_{now}_{digest}"

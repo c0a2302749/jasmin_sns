@@ -5,8 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "networkx>=3.6.1",
     "numpy>=2.5.3",
     "pytest>=9.1.1",
+    "pyyaml>=6.0.3",
+    "scipy>=1.18.1",
 ]
 
 [dependency-groups]
@@ -15,5 +18,5 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+pythonpath = ["src"]
 

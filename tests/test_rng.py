@@ -1,10 +1,21 @@
-"""tests/test_rng.py — F-02: 4本の乱数ストリームが独立に再現される。"""
+"""tests/test_rng.py — F-02: 4本の乱数ストリームが独立に再現される。
+
+設計決定参照:
+- F-02: マスターシードから4本の乱数ストリームを派生させる[cite: 1]
+- NFR-2: 乱数ストリームの分離（ネットワーク生成／初期意見／パラメータ生成／更新順序の各用途に独立ストリームを割り当てる）[cite: 3]
+- FR-G3: ガバナンス層は乱数を消費しない（介入あり／なしで乱数系列をずらさないため、これら4本以外でGeneratorを作らない）[cite: 3]
+"""
 from __future__ import annotations
 
 import numpy as np
 
-from src import rng
-from src.rng import STREAM_NAMES
+import rng
+from rng import STREAM_NAMES
+
+
+def test_F02_stream_names_are_exactly_four_in_fixed_order():
+    """STREAM_NAMES が ("network", "init", "persona", "order") と完全一致することの検証。"""
+    assert STREAM_NAMES == ("network", "init", "persona", "order")
 
 
 def test_F02_streams_has_four_named_generators():
@@ -26,14 +37,17 @@ def test_F02_same_master_seed_is_reproducible():
 
 
 def test_F02_different_seeds_produce_different_outputs():
-    """異なるマスターシードからは異なる乱数系列が生成されることの検証。"""
+    """異なるマスターシードからは異なる乱数系列が生成されることの検証。
+
+    4ストリームすべてで100点比較し、偶然の一致を排除する。
+    """
     s1 = rng.streams(100)
     s2 = rng.streams(200)
 
     for name in STREAM_NAMES:
-        a = s1[name].random(10)
-        b = s2[name].random(10)
-        assert not np.array_equal(a, b)
+        a = s1[name].random(100)
+        b = s2[name].random(100)
+        assert not np.array_equal(a, b), f"{name} ストリームが一致した"
 
 
 def test_F02_streams_are_mutually_independent():
