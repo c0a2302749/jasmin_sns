@@ -97,8 +97,7 @@ def _persona_counts(table: list[dict], n: int) -> list[int]:
 def assign(
     config: Config, n: int, rng: np.random.Generator
 ) -> list[ParticipantParams]:
-    """
-    参加者n人分のParticipantParamsを生成する（FR-P6, FR-P7）。
+    """参加者n人分のParticipantParamsを生成する（FR-P6, FR-P7）。
     alpha/beta/gamma/w_sys/w_sns/b はペルソナ型ごとの固定値（A7）。
     theta_react のみ Beta(mu*nu, (1-mu)*nu) から連続的に生成する（FR-P7）。
     生成順序は persona ストリームのみを消費し、他のストリームに影響しない。
