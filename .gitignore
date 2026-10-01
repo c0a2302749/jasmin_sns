@@ -10,3 +10,4 @@ wheels/
 # Virtual environments
 .venv
 docs/md/
+.mypy_cache/
