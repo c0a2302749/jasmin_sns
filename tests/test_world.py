@@ -13,97 +13,11 @@ import numpy as np
 import pytest
 
 import rng
-from config import Config, load
 from world.ablation import Ablation, apply_ablation
 from world.build import build_world, init_opinions, update_orders
 from world.network import NetworkGenerationError, build_neighbors
 from world.persona import _persona_counts, assign, load_persona_table
 import yaml
-
-
-@pytest.fixture
-def small_config(tmp_path) -> Config:
-    """テスト用の最小構成設定ファイルを作成して読み込む。"""
-    cfg_file = tmp_path / "test_config.yaml"
-    persona_file = tmp_path / "test_persona.yaml"
-
-    # Pythonの辞書として定義する（インデントはPythonのルールに従うだけでOK）
-    cfg_data = {
-        "model": {
-            "S": 2.0,
-            "k_react": 1.0,
-            "T_max": 50,
-            "T_min": 5,
-            "eps": 1e-4,
-        },
-        "network": {
-            "n": 20,
-            "k": 2,
-            "p": 0.1,
-            "max_tries": 100,
-        },
-        "init_opinion": {
-            "mean": 0.5,
-            "std": 0.1,
-        },
-        "personas": {
-            "table": "test_persona",
-            "concentration_nu": 10.0,
-        },
-        "experiment": {
-            "master_seed_start": 0,
-            "n_seeds": 5,
-            "W_values": [0.0, 0.5],
-            "ablation_conditions": ["none", "ABL-SYS"],
-        },
-        "stopping": {
-            "update_mode": "gauss_seidel",
-        },
-        "metrics": {
-            "theta": 0.5,
-            "bootstrap_B": 100,
-            "bootstrap_seed": 42,
-        },
-        "logging": {
-            "log_every": 1,
-        }
-    }
-
-    persona_data = {
-        "personas": [
-            {
-                "name": "conformist",
-                "share": 0.5,
-                "alpha": 0.7,
-                "beta": 0.4,
-                "gamma": 0.1,
-                "w_sns": 0.7,
-                "w_sys": 0.4,
-                "b": 0.15,
-                "mu_react": 0.7,
-            },
-            {
-                "name": "cautious",
-                "share": 0.5,
-                "alpha": 0.4,
-                "beta": 0.7,
-                "gamma": 0.4,
-                "w_sns": 0.4,
-                "w_sys": 0.7,
-                "b": 0.30,
-                "mu_react": 0.7,
-            },
-        ]
-    }
-
-    # 辞書をYAML文字列に変換して書き込む
-    with cfg_file.open("w", encoding="utf-8") as f:
-        yaml.safe_dump(cfg_data, f, sort_keys=False)
-
-    with persona_file.open("w", encoding="utf-8") as f:
-        yaml.safe_dump(persona_data, f, sort_keys=False)
-
-    return load(cfg_file)
 
 
 def test_F03_A14_network_is_connected(small_config):
@@ -333,6 +247,37 @@ def test_F05_persona_counts_use_largest_remainder():
     counts = _persona_counts(thirds, 10)
     assert counts == [4, 3, 3]
     assert sum(counts) == 10
+
+
+def test_F05_persona_counts_negative_remainder_raises():
+    """share合計が1を上回り剰余が負になる場合は ValueError (F-05)。
+
+    黙って合計≠n の配分を返さず、 loudly 失敗すること。
+    """
+    table = [{"share": 1.0}, {"share": 0.5}]
+    with pytest.raises(ValueError):
+        _persona_counts(table, 10)
+
+
+def test_F03_neighbors_are_tuple(small_config):
+    """build_neighbors の返却値と World.neighbors が tuple である (NFR-1)。
+
+    タプル自体への追加・差替を型レベルで防ぐ。
+    """
+    neighbors = build_neighbors(
+        n=small_config.network.n,
+        k=small_config.network.k,
+        p=small_config.network.p,
+        rng=rng.streams(2)["network"],
+        max_tries=small_config.network.max_tries,
+    )
+    assert isinstance(neighbors, tuple)
+    assert all(isinstance(nbr, np.ndarray) for nbr in neighbors)
+
+    w = build_world(small_config, seed=21)
+    assert isinstance(w.neighbors, tuple)
+    with pytest.raises(AttributeError):
+        w.neighbors.append(np.array([0]))  # type: ignore[attr-defined]
 
 
 def test_F05_theta_react_in_unit_interval(small_config):

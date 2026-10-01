@@ -77,12 +77,20 @@ def _persona_counts(table: list[dict], n: int) -> list[int]:
         table (list[dict]): ペルソナ型の設定辞書のリスト。
         n (int): 参加者数。
 
+    Raises:
+        ValueError: share合計が1を上回り端数配分が破綻する場合（剰余が負）。
+
     Returns:
         list[int]: 各型の人数リスト。table の順序に対応。
     """
     raw_counts = [p["share"] * n for p in table]
     base = [int(np.floor(c)) for c in raw_counts]
     remainder = n - sum(base)
+
+    if remainder < 0:
+        raise ValueError(
+            f"share合計が1を上回るため人数配分が破綻する: n={n}, base合計={sum(base)}"
+        )
 
     # 端数が大きい順にソートして1ずつ分配（同値の場合は元のインデックス順）
     fractions = [(c - b, -i) for i, (c, b) in enumerate(zip(raw_counts, base))]

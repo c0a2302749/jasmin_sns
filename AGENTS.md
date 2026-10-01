@@ -20,7 +20,7 @@ SNS opinion-dynamics simulation (Python >=3.12, `uv`-managed). `README.md` is em
 - `rng.py` — `streams(master_seed)` derives exactly 4 `Generator`s (`network`, `init`, `persona`, `order`) via `SeedSequence.spawn`.
 - `world/build.py` — `build_world(config, seed)` is the aggregation point; `World` is a frozen dataclass passed downstream.
 - `world/{network,persona}.py`, `world/ablation.py` — components; `run/`, `layers/`, `io/`, `analysis/` are empty stubs. `configs/`, `scripts/` are empty.
-- New tests: copy the `small_config(tmp_path)` fixture in `tests/test_world.py` — it writes a minimal config + persona YAML pair.
+- New tests: reuse the `small_config(tmp_path)` fixture in `tests/conftest.py` — it writes a minimal config + persona YAML pair.
 
 ## Invariants (do not break)
 

@@ -29,12 +29,13 @@ class World:
     """シードで確定した後は触らない世界の状態（値を持ち回る不変クラス）。
 
     不変条件: O0, R0, update_order および neighbors の各配列は
-    writeable=False で凍結される。params の ParticipantParams は frozen、
+    writeable=False で凍結され、neighbors のタプル自体も追加・差替不可。
+    params の ParticipantParams は frozen、
     attrs の全配列は Attrs.__post_init__ で凍結される。
 
     Attributes:
         seed: マスターシード。
-        neighbors: 隣接ノードのリスト（各要素は np.ndarray）。
+        neighbors: 隣接ノードのタプル（各要素は np.ndarray）。
         params: 参加者のペルソナパラメータのリスト。
         attrs: 計算高速化・一括処理のための属性配列コンテナ。
         O0: 初期意見配列（shape (n,)）。
@@ -43,7 +44,7 @@ class World:
         n_clipped_O0: 初期意見クリップが発生した件数。
     """
     seed: int
-    neighbors: list[np.ndarray]
+    neighbors: tuple[np.ndarray, ...]
     params: list[ParticipantParams]
     attrs: Attrs                 # condition="none" の基準属性（A6）
     O0: np.ndarray               # shape (n,)

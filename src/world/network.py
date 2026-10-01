@@ -21,7 +21,7 @@ def build_neighbors(
     p: float,
     rng: np.random.Generator,
     max_tries: int = 100,
-) -> list[np.ndarray]:
+) -> tuple[np.ndarray, ...]:
     """連結 Watts-Strogatz グラフを生成し、ノードごとの隣接インデックス配列リストを返す。
 
     Generator を seed として直接渡すため NetworkX >= 3.3 が必須。
@@ -40,7 +40,8 @@ def build_neighbors(
             （nx.NetworkXError のみラップする。それ以外の例外はそのまま伝播する）。
 
     Returns:
-        list[np.ndarray]: インデックス i の要素がノード i の近傍ノードID配列 (1D ndarray) であるリスト
+        tuple[np.ndarray, ...]: インデックス i の要素がノード i の近傍ノードID配列
+            (1D ndarray) であるタプル
     """
     try:
         # ネットワーク生成用の関数に直接 Generator を渡す (NetworkX >= 3.3 で対応)
@@ -59,4 +60,4 @@ def build_neighbors(
         nbr_arr.flags.writeable = False  # ネットワークのトポロジーを凍結
         neighbors_list.append(nbr_arr)
 
-    return neighbors_list
+    return tuple(neighbors_list)

@@ -9,12 +9,13 @@
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 import numpy as np
 
 
 def social_signals(
     i: int, 
-    neighbors: list[np.ndarray], 
+    neighbors: Sequence[np.ndarray], 
     O: np.ndarray, 
     R: np.ndarray
 ) -> tuple[float, float]:
@@ -27,7 +28,7 @@ def social_signals(
 
     Args:
         i (int): 対象の参加者インデックス。
-        neighbors (list[np.ndarray]): 全参加者の隣接インデックス配列のリスト。
+        neighbors (Sequence[np.ndarray]): 全参加者の隣接インデックス配列のシーケンス。
         O (np.ndarray): 全参加者の現在の意見配列 (1D ndarray)。
         R (np.ndarray): 全参加者の現在のリスク認知配列 (1D ndarray)。
 

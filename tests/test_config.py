@@ -242,3 +242,95 @@ def test_F01_run_id_digest_ignores_path_and_warnings(tmp_path):
 
     cfg_noisy = replace(cfg, warnings=("dummy warning",), source_path="other")
     assert run_id(cfg)[-4:] == run_id(cfg_noisy)[-4:]
+
+
+def _model_patch(tmp_path, **overrides):
+    """model セクションの一部を上書きした設定ペアを書き込む。"""
+    data = _valid_cfg_data()
+    data["model"] = {**data["model"], **overrides}
+    return _write_pair(tmp_path, data)
+
+
+@pytest.mark.parametrize("t_max", [0, -3])
+def test_F01_rejects_non_positive_T_max(tmp_path, t_max):
+    """T_max < 1 は ConfigError (F-01)。"""
+    with pytest.raises(ConfigError):
+        load(_model_patch(tmp_path, T_max=t_max))
+
+
+def test_F01_rejects_T_min_above_T_max(tmp_path):
+    """T_min > T_max は ConfigError (F-01)。"""
+    with pytest.raises(ConfigError):
+        load(_model_patch(tmp_path, T_min=60, T_max=50))
+
+
+@pytest.mark.parametrize("eps", [0.0, -1e-4])
+def test_F01_rejects_non_positive_eps(tmp_path, eps):
+    """eps <= 0 は ConfigError (F-01)。"""
+    with pytest.raises(ConfigError):
+        load(_model_patch(tmp_path, eps=eps))
+
+
+@pytest.mark.parametrize("tries", [0, -1])
+def test_F01_rejects_non_positive_max_tries(tmp_path, tries):
+    """max_tries < 1 は ConfigError (F-01, A14)。"""
+    data = _valid_cfg_data()
+    data["network"] = {"n": 20, "k": 2, "p": 0.1, "max_tries": tries}
+    with pytest.raises(ConfigError):
+        load(_write_pair(tmp_path, data))
+
+
+def test_F01_rejects_negative_std(tmp_path):
+    """init_opinion.std < 0 は ConfigError (F-01, F-04)。"""
+    data = _valid_cfg_data()
+    data["init_opinion"] = {"mean": 0.5, "std": -0.1}
+    with pytest.raises(ConfigError):
+        load(_write_pair(tmp_path, data))
+
+
+@pytest.mark.parametrize("seeds", [0, -2])
+def test_F01_rejects_non_positive_n_seeds(tmp_path, seeds):
+    """n_seeds < 1 は ConfigError (F-01)。"""
+    data = _valid_cfg_data()
+    data["experiment"] = {
+        "master_seed_start": 0, "n_seeds": seeds, "W_values": [0.0],
+        "ablation_conditions": ["none"],
+    }
+    with pytest.raises(ConfigError):
+        load(_write_pair(tmp_path, data))
+
+
+def test_F01_rejects_missing_section(tmp_path):
+    """セクション欠落は KeyError ではなく ConfigError (F-01)。"""
+    data = _valid_cfg_data()
+    del data["model"]
+    with pytest.raises(ConfigError):
+        load(_write_pair(tmp_path, data))
+
+
+def test_F01_rejects_missing_key(tmp_path):
+    """キー欠落は KeyError ではなく ConfigError (F-01)。"""
+    data = _valid_cfg_data()
+    del data["model"]["S"]
+    with pytest.raises(ConfigError):
+        load(_write_pair(tmp_path, data))
+
+
+def test_F01_rejects_non_numeric_value(tmp_path):
+    """非数値は ValueError ではなく ConfigError (F-01)。"""
+    with pytest.raises(ConfigError):
+        load(_model_patch(tmp_path, S="abc"))
+
+
+def test_F01_rejects_extra_key(tmp_path):
+    """未知のキーは TypeError ではなく ConfigError (F-01, NFR-5)。"""
+    with pytest.raises(ConfigError):
+        load(_model_patch(tmp_path, unknown_key=1))
+
+
+def test_F01_rejects_empty_file(tmp_path):
+    """空YAMLは ConfigError (F-01)。"""
+    cfg_file = tmp_path / "test_config.yaml"
+    cfg_file.write_text("", encoding="utf-8")
+    with pytest.raises(ConfigError):
+        load(cfg_file)

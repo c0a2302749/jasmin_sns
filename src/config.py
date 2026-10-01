@@ -172,10 +172,17 @@ def _check_and_warn(cfg_dict: dict[str, Any]) -> list[str]:
         cfg_dict: YAMLから読み込んだ設定の辞書。
 
     Raises:
+        ConfigError: 構造・キー・値型が不正な場合（セクション欠落、非数値などを含む）。
         ConfigError: model.S が正の実数でない場合。
+        ConfigError: model.T_max が1以上の整数でない場合。
+        ConfigError: model.T_min が T_max 以下の整数でない場合。
+        ConfigError: model.eps が正の実数でない場合。
         ConfigError: network.n が正の整数でない場合。
         ConfigError: network.k が奇数、または n 以上の場合。
         ConfigError: network.p が [0, 1] の範囲外の場合。
+        ConfigError: network.max_tries が1以上の整数でない場合。
+        ConfigError: init_opinion.std が負の場合。
+        ConfigError: experiment.n_seeds が1以上の整数でない場合。
         ConfigError: experiment.W_values の要素が [0, 1] の範囲外の場合。
         ConfigError: experiment.ablation_conditions に未知の条件が含まれる場合。
         ConfigError: stopping.update_mode が "gauss_seidel" か "jacobi" でない場合。
@@ -183,55 +190,90 @@ def _check_and_warn(cfg_dict: dict[str, Any]) -> list[str]:
     Returns:
         警告メッセージのリスト（エラーなしの場合のみ到達する）。
     """
+    if not isinstance(cfg_dict, dict):
+        raise ConfigError(
+            f"設定はマッピングでなければならない: {type(cfg_dict).__name__}"
+        )
+
     # 検査と警告
     warnings: list[str] = []
 
-    # --- Model ---
-    model = cfg_dict["model"]
-    S = float(model["S"])
-    if S <= 0:
-        raise ConfigError(f"model.S は正の実数でなければならない: {S}")
-    if S > 2.0:
-        warnings.append(
-            f"model.S={S} は推奨範囲(0<S<=2)を超えている。無刺激時にも自発的分極が生じるレジームとして扱う (regime: bistable, A3)。"
-        )
+    try:
+        # --- Model ---
+        model = cfg_dict["model"]
+        S = float(model["S"])
+        if S <= 0:
+            raise ConfigError(f"model.S は正の実数でなければならない: {S}")
+        if S > 2.0:
+            warnings.append(
+                f"model.S={S} は推奨範囲(0<S<=2)を超えている。無刺激時にも自発的分極が生じるレジームとして扱う (regime: bistable, A3)。"
+            )
 
-    k_react = float(model["k_react"])
-    if not (0 <= k_react <= 2):
-        warnings.append(f"model.k_react={k_react} は感度分析範囲[0,2]の外（A9）。")
+        k_react = float(model["k_react"])
+        if not (0 <= k_react <= 2):
+            warnings.append(f"model.k_react={k_react} は感度分析範囲[0,2]の外（A9）。")
 
-    # --- Network ---
-    net = cfg_dict["network"]
-    n, k, p = int(net["n"]), int(net["k"]), float(net["p"])
-    if n <= 0:
-        raise ConfigError(f"network.n は正の整数でなければならない: {n}")
-    if k % 2 != 0 or k >= n:
-        raise ConfigError(f"network.k は偶数かつ n 未満でなければならない: k={k}, n={n}")
-    if not (0.0 <= p <= 1.0):
-        raise ConfigError(f"network.p は [0, 1] の範囲でなければならない: {p}")
+        T_max = int(model["T_max"])
+        T_min = int(model["T_min"])
+        eps = float(model["eps"])
+        if T_max < 1:
+            raise ConfigError(f"model.T_max は1以上の整数でなければならない: {T_max}")
+        if T_min > T_max:
+            raise ConfigError(
+                f"model.T_min は T_max 以下でなければならない: T_min={T_min}, T_max={T_max}"
+            )
+        if eps <= 0:
+            raise ConfigError(f"model.eps は正の実数でなければならない: {eps}")
 
-    # --- Experiment ---
-    exp = cfg_dict["experiment"]
-    for w in exp["W_values"]:
-        if not (0.0 <= float(w) <= 1.0):
-            raise ConfigError(f"experiment.W_values の値は[0,1]でなければならない: {w}")
+        # --- Network ---
+        net = cfg_dict["network"]
+        n, k, p = int(net["n"]), int(net["k"]), float(net["p"])
+        if n <= 0:
+            raise ConfigError(f"network.n は正の整数でなければならない: {n}")
+        if k % 2 != 0 or k >= n:
+            raise ConfigError(f"network.k は偶数かつ n 未満でなければならない: k={k}, n={n}")
+        if not (0.0 <= p <= 1.0):
+            raise ConfigError(f"network.p は [0, 1] の範囲でなければならない: {p}")
 
-    valid_ablations = {"none", "ABL-SYS", "ABL-SNS", "ABL-REACT"}
-    for cond in exp["ablation_conditions"]:
-        if cond not in valid_ablations:
-            raise ConfigError(f"未知のAblation条件が含まれています: {cond}")
+        max_tries = int(net["max_tries"])
+        if max_tries < 1:
+            raise ConfigError(f"network.max_tries は1以上の整数でなければならない: {max_tries}")
 
-    if int(exp["n_seeds"]) < 5:
-        warnings.append(
-            f"experiment.n_seeds={exp['n_seeds']} < 5: 統計的信頼区間の計算精度が不十分な可能性がある。"
-        )
+        # --- Init opinion ---
+        init = cfg_dict["init_opinion"]
+        std = float(init["std"])
+        if std < 0:
+            raise ConfigError(f"init_opinion.std は非負でなければならない: {std}")
 
-    # --- Stopping ---
-    stopping = cfg_dict["stopping"]
-    if stopping["update_mode"] not in ("gauss_seidel", "jacobi"):
-        raise ConfigError(
-            f"stopping.update_mode は gauss_seidel か jacobi のみ（A2）: {stopping['update_mode']}"
-        )
+        # --- Experiment ---
+        exp = cfg_dict["experiment"]
+        for w in exp["W_values"]:
+            if not (0.0 <= float(w) <= 1.0):
+                raise ConfigError(f"experiment.W_values の値は[0,1]でなければならない: {w}")
+
+        valid_ablations = {"none", "ABL-SYS", "ABL-SNS", "ABL-REACT"}
+        for cond in exp["ablation_conditions"]:
+            if cond not in valid_ablations:
+                raise ConfigError(f"未知のAblation条件が含まれています: {cond}")
+
+        n_seeds = int(exp["n_seeds"])
+        if n_seeds < 1:
+            raise ConfigError(f"experiment.n_seeds は1以上の整数でなければならない: {n_seeds}")
+        if n_seeds < 5:
+            warnings.append(
+                f"experiment.n_seeds={exp['n_seeds']} < 5: 統計的信頼区間の計算精度が不十分な可能性がある。"
+            )
+
+        # --- Stopping ---
+        stopping = cfg_dict["stopping"]
+        if stopping["update_mode"] not in ("gauss_seidel", "jacobi"):
+            raise ConfigError(
+                f"stopping.update_mode は gauss_seidel か jacobi のみ（A2）: {stopping['update_mode']}"
+            )
+    except ConfigError:
+        raise
+    except (KeyError, TypeError, ValueError) as e:
+        raise ConfigError(f"設定値の形式が不正: {e}") from e
 
     return warnings
 
@@ -249,6 +291,7 @@ def load(path: str | Path) -> Config:
     Raises:
         ConfigError: 指定された設定ファイルが存在しない場合。
         ConfigError: 指定されたペルソナ設定ファイルが存在しない場合。
+        ConfigError: 設定の構造・キー・値型が不正な場合。
         ConfigError: _check_and_warn の検査条件に違反した場合。
 
     Returns:
@@ -263,35 +306,40 @@ def load(path: str | Path) -> Config:
 
     warnings = _check_and_warn(raw)
 
-    # persona表のパスは、configファイルと同じディレクトリからの相対で解決する
-    # （cwdに依存させない。NFR-7: 可搬性）
-    table_name = raw["personas"]["table"]
-    table_path = str((path.parent / f"{table_name}.yaml").resolve())
-    if not Path(table_path).exists():
-        raise ConfigError(f"persona表が見つからない: {table_path}")
+    try:
+        # persona表のパスは、configファイルと同じディレクトリからの相対で解決する
+        # （cwdに依存させない。NFR-7: 可搬性）
+        table_name = raw["personas"]["table"]
+        table_path = str((path.parent / f"{table_name}.yaml").resolve())
+        if not Path(table_path).exists():
+            raise ConfigError(f"persona表が見つからない: {table_path}")
 
-    return Config(
-        model=ModelConfig(**raw["model"]),
-        network=NetworkConfig(**raw["network"]),
-        init_opinion=InitOpinionConfig(**raw["init_opinion"]),
-        personas=PersonaConfig(
-            table=table_name,
-            concentration_nu=raw["personas"]["concentration_nu"],
-            table_path=table_path,
-        ),
-        experiment=ExperimentConfig(
-            master_seed_start=raw["experiment"]["master_seed_start"],
-            n_seeds=raw["experiment"]["n_seeds"],
-            W_values=tuple(raw["experiment"]["W_values"]),
-            ablation_conditions=tuple(
-                raw["experiment"]["ablation_conditions"]),
-        ),
-        stopping=StoppingConfig(**raw["stopping"]),
-        metrics=MetricsConfig(**raw["metrics"]),
-        logging=LoggingConfig(**raw["logging"]),
-        warnings=tuple(warnings),
-        source_path=str(path),
-    )
+        return Config(
+            model=ModelConfig(**raw["model"]),
+            network=NetworkConfig(**raw["network"]),
+            init_opinion=InitOpinionConfig(**raw["init_opinion"]),
+            personas=PersonaConfig(
+                table=table_name,
+                concentration_nu=raw["personas"]["concentration_nu"],
+                table_path=table_path,
+            ),
+            experiment=ExperimentConfig(
+                master_seed_start=raw["experiment"]["master_seed_start"],
+                n_seeds=raw["experiment"]["n_seeds"],
+                W_values=tuple(raw["experiment"]["W_values"]),
+                ablation_conditions=tuple(
+                    raw["experiment"]["ablation_conditions"]),
+            ),
+            stopping=StoppingConfig(**raw["stopping"]),
+            metrics=MetricsConfig(**raw["metrics"]),
+            logging=LoggingConfig(**raw["logging"]),
+            warnings=tuple(warnings),
+            source_path=str(path),
+        )
+    except ConfigError:
+        raise
+    except (KeyError, TypeError) as e:
+        raise ConfigError(f"設定の形式が不正: {e}") from e
 
 
 def run_id(config: Config) -> str:
