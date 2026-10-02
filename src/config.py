@@ -183,6 +183,7 @@ def _check_and_warn(cfg_dict: dict[str, Any]) -> list[str]:
         ConfigError: network.max_tries が1以上の整数でない場合。
         ConfigError: init_opinion.std が負の場合。
         ConfigError: experiment.n_seeds が1以上の整数でない場合。
+        ConfigError: experiment.master_seed_start が非負の整数でない場合。
         ConfigError: experiment.W_values の要素が [0, 1] の範囲外の場合。
         ConfigError: experiment.ablation_conditions に未知の条件が含まれる場合。
         ConfigError: stopping.update_mode が "gauss_seidel" か "jacobi" でない場合。
@@ -262,6 +263,12 @@ def _check_and_warn(cfg_dict: dict[str, Any]) -> list[str]:
         if n_seeds < 5:
             warnings.append(
                 f"experiment.n_seeds={exp['n_seeds']} < 5: 統計的信頼区間の計算精度が不十分な可能性がある。"
+            )
+
+        master_seed_start = int(exp["master_seed_start"])
+        if master_seed_start < 0:
+            raise ConfigError(
+                f"experiment.master_seed_start は非負の整数でなければならない: {master_seed_start}"
             )
 
         # --- Stopping ---

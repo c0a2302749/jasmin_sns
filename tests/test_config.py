@@ -300,6 +300,17 @@ def test_F01_rejects_non_positive_n_seeds(tmp_path, seeds):
         load(_write_pair(tmp_path, data))
 
 
+def test_F01_rejects_negative_master_seed_start(tmp_path):
+    """master_seed_start < 0 は ConfigError (F-01, NFR-2)。"""
+    data = _valid_cfg_data()
+    data["experiment"] = {
+        "master_seed_start": -1, "n_seeds": 5, "W_values": [0.0],
+        "ablation_conditions": ["none"],
+    }
+    with pytest.raises(ConfigError):
+        load(_write_pair(tmp_path, data))
+
+
 def test_F01_rejects_missing_section(tmp_path):
     """セクション欠落は KeyError ではなく ConfigError (F-01)。"""
     data = _valid_cfg_data()
