@@ -33,7 +33,7 @@ def _valid_cfg_data() -> dict[str, Any]:
         },
         "stopping": {"update_mode": "gauss_seidel"},
         "metrics": {"theta": 0.5, "bootstrap_B": 100, "bootstrap_seed": 42},
-        "logging": {"log_every": 1},
+        "logging": {"log_every": 1, "debug_terms": False},
     }
 
 

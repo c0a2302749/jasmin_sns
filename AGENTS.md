@@ -19,7 +19,9 @@ SNS opinion-dynamics simulation (Python >=3.12, `uv`-managed). `README.md` is em
 - `config.py` — load/validate YAML into frozen dataclasses (`Config`, `ModelConfig`, ...). `run_id()` = timestamp + 4-hex config hash.
 - `rng.py` — `streams(master_seed)` derives exactly 4 `Generator`s (`network`, `init`, `persona`, `order`) via `SeedSequence.spawn`.
 - `world/build.py` — `build_world(config, seed)` is the aggregation point; `World` is a frozen dataclass passed downstream.
-- `world/{network,persona}.py`, `world/ablation.py` — components; `run/`, `layers/`, `io/`, `analysis/` are empty stubs. `configs/`, `scripts/` are empty.
+- `world/{network,persona}.py`, `world/ablation.py` — components; `run/{arm,checks,metrics,experiment}.py`, `layers/`, `io_/{schema,writer}.py` are implemented. `analysis/`, `configs/` are empty.
+- `src/io/` is named `src/io_/` on purpose: a top-level `io` package shadows the stdlib `io` module and breaks `from io.writer import ...` at runtime (設計③:230 records `io_` as the pre-rename name).
+- Column names and dtypes are canonical in `io_/schema.py` — `writer.py`, `run/metrics.py`, and `run/checks.py` emit dict keys that must match those schemas exactly.
 - New tests: reuse the `small_config(tmp_path)` fixture in `tests/conftest.py` — it writes a minimal config + persona YAML pair.
 
 ## Invariants (do not break)

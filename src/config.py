@@ -128,8 +128,10 @@ class LoggingConfig:
 
     Attributes:
         log_every: 状態を出力するターンの間隔。
+        debug_terms: 更新式の項ごとの分解値を trajectory に記録するかどうか (NFR-4)。
     """
     log_every: int
+    debug_terms: bool
 
 
 @dataclass(frozen=True)

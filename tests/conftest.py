@@ -51,6 +51,7 @@ def small_config(tmp_path) -> Config:
         },
         "logging": {
             "log_every": 1,
+            "debug_terms": False,
         },
     }
 

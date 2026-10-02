@@ -70,9 +70,9 @@ TRAJECTORY_SCHEMA: Final[dict[str, PolarsDataType]] = {
 }
 
 TRAJECTORY_DEBUG_COLUMNS: Final[dict[str, PolarsDataType]] = {
-    "term_alpha": pl.Float64,
-    "term_beta": pl.Float64,
-    "term_gamma": pl.Float64,
+    "term_alpha_SO": pl.Float64,
+    "term_beta_R": pl.Float64,
+    "term_gamma_diff": pl.Float64,
     "pre_tanh": pl.Float64,
 }
 
