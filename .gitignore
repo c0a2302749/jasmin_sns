@@ -11,3 +11,5 @@ wheels/
 .venv
 docs/md/
 .mypy_cache/
+logs
+runs

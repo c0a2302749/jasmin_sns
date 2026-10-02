@@ -6,7 +6,7 @@ from collections import defaultdict
 from dataclasses import replace
 from datetime import date
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import numpy as np
 from analysis.persona_select import criteria
 from config import load

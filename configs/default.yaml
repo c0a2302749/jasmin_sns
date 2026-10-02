@@ -35,3 +35,4 @@ metrics:
 
 logging:
   log_every: 1
+  debug_terms: false
