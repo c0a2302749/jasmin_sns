@@ -5,7 +5,9 @@
      |E_rate|最大の W* を決める。
      同時に介入なし賛成率 ctrl率 と初期意見クリップ率 n_clipped_O0/n を出す。
   2. 選定基準 (結果を見る前の事前固定):
-       介入なし賛成率 in [0.4, 0.6] かつ 初期意見クリップ率 < 0.05。
+        介入なし賛成率 in [0.4, 0.6] かつ 初期意見クリップ率 < 0.05。
+        複数候補が残る場合は、介入なし賛成率が 0.5 に最も近い候補を選ぶ
+        (タイブレーク。ctrl率0.5は二値化感度が最大で効果を検出しやすいため)。
   3. 確認 (seeds 60-89): 選んだ mu と W* で E(W*) と E(1.0) を対にし、
      絶対値差 |E(W*)|-|E(1.0)| の95%CI (B=10000) を出す。E_maj も出す。
 
@@ -32,7 +34,8 @@ from runlog import log_header
 from world.ablation import Ablation, apply_ablation
 from world.build import build_world
 
-CRITERION = "介入なし賛成率 in [0.4,0.6] かつ 初期意見クリップ率 < 0.05"
+CRITERION = ("介入なし賛成率 in [0.4,0.6] かつ 初期意見クリップ率 < 0.05; "
+             "複数候補時は介入なし賛成率が0.5に最も近い候補を選ぶ")
 
 
 def scan(config, mu, seeds, W_list):
@@ -102,7 +105,7 @@ def main() -> None:
                       "clip": clip_rate, "ok": ok, "explore": (e, emaj)}
         print(f"  {mu:.2f}  {ctrl_rate:.4f}  {clip_rate:.4f}  {'合格' if ok else '不合格':>4}  "
               f"{Wstar:.2f}  {abs(means[Wstar]):.5f}    {means[Wstar]:+.5f}  {means[1.0]:+.5f}")
-        sel = sorted({0.1, 0.25, 0.5, Wstar, 0.75, 1.0})
+        sel = [w for w in sorted({0.1, 0.25, 0.5, Wstar, 0.75, 1.0}) if w in means]
         print("       E_rate: " + ", ".join(f"W={w:.2f}:{means[w]:+.5f}" for w in sel))
 
     print()
@@ -137,6 +140,9 @@ def main() -> None:
     print()
     if ok_mus:
         print(f"→ 選定基準を満たす候補: {', '.join(f'{mu:.2f}' for mu in ok_mus)}")
+        sel_mu = min(ok_mus, key=lambda mu: abs(chosen[mu]["ctrl"] - 0.5))
+        print(f"   タイブレーク(介入なし賛成率が0.5に最も近い): mu={sel_mu:.2f} "
+              f"(ctrl率={chosen[sel_mu]['ctrl']:.4f}, W*={chosen[sel_mu]['Wstar']:.2f}) を主実験に選定")
     else:
         print("→ 選定基準を満たす候補なし。基準の再検討が必要。")
 
