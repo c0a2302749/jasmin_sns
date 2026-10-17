@@ -1,0 +1,32 @@
+{
+  "csv": "schema_summary_seeds60-89_3f86.csv",
+  "csv_sha256": "81499286463589034eacc1d4cbd57779dfa5257f7d2b97b4d7ccea182932b333",
+  "rows": 720,
+  "columns": [
+    "seed",
+    "W",
+    "ablation_condition",
+    "E_rate",
+    "E_maj",
+    "flip_rate",
+    "dO_mean",
+    "pol_within_treat",
+    "pol_within_ctrl",
+    "pol_between_treat",
+    "pol_between_ctrl",
+    "T_star",
+    "t_conv_treat",
+    "t_conv_ctrl",
+    "n_clipped_O0",
+    "n_clipped_R_treat",
+    "n_clipped_R_ctrl",
+    "n_reactance_active"
+  ],
+  "config": "configs/main_o0_080.yaml",
+  "config_hash": "3f86",
+  "seed_start": 60,
+  "n_seeds": 30,
+  "git_commit": "407fb5146f1316f7979dcb75b86e18e4cad5c744",
+  "git_dirty": true,
+  "generated_at": "2026-10-17T18:51:06"
+}
