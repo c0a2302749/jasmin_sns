@@ -106,7 +106,7 @@ def run_checks(
         )
 
     # ABL-SNS (w_sns=0): 社会的影響（S_R）が無効なため、R は近傍に依存せず数式だけで閉じて計算できる
-    if ablation == "ABL-SNS":
+    if ablation in ("ABL-SNS", "ABL-SNS+ALPHA"):
         # R_i = Clip(w_sys_i * W_eff_i + b_i)
         expected_r = np.clip(
             attrs.w_sys[None, :] * treat.W_eff[None, :] + attrs.b[None, :], 
@@ -121,6 +121,28 @@ def run_checks(
             "ABL_SNS_R_INDEPENDENT",
             r_sns_pass,
             f"R_matches_isolated_formula={r_sns_pass}",
+        )
+
+    # ABL-ALPHA (alpha=0): O経由の同調項が無効なため、alpha 配列は全0であること。
+    # ABL-SNS+ALPHA でも同様に alpha は全0であること。
+    if ablation in ("ABL-ALPHA", "ABL-SNS+ALPHA"):
+        alpha_zero = bool(np.all(attrs.alpha == 0.0))
+        add_result(
+            "ABL_ALPHA_ZERO",
+            alpha_zero,
+            f"alpha_all_zero={alpha_zero}",
+        )
+
+    # 3. 単調性: 介入は -βR 経由でのみ O を下げる (β>=0, R>=0) ため、
+    # 介入あり O(treat) <= 介入なし O(ctrl) が全ターン・全参加者で成立するはず。
+    # W=0 では自明に成立するため W>0 のときのみ判定する。tol=1e-9。
+    if W_level > 0.0:
+        max_violation = float(np.max(treat.O - ctrl.O))
+        mono_pass = bool(max_violation <= 1e-9)
+        add_result(
+            "MONOTONE_DECREASE",
+            mono_pass,
+            f"max(O_treat-O_ctrl)={max_violation:.6e} (tol=1e-9)",
         )
 
     return results

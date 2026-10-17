@@ -30,7 +30,7 @@ stopping:
 
 metrics:
   theta: 0.5
-  bootstrap_B: 2000
+  bootstrap_B: 10000
   bootstrap_seed: 12345
 
 logging:

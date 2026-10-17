@@ -1,0 +1,38 @@
+model:
+  S: 2.0
+  k_react: 1.0
+  T_max: 500
+  T_min: 10
+  eps: 1.0e-4
+
+network:
+  n: 100
+  k: 4
+  p: 0.15
+  max_tries: 100
+
+init_opinion:
+  mean: 0.8
+  std: 0.1
+
+personas:
+  table: persona_A
+  concentration_nu: 10.0
+
+experiment:
+  master_seed_start: 0
+  n_seeds: 30
+  W_values: [0.0, 0.5, 0.55, 0.6, 0.75, 1.0]
+  ablation_conditions: [none, ABL-SNS, ABL-ALPHA, ABL-SNS+ALPHA]
+
+stopping:
+  update_mode: gauss_seidel
+
+metrics:
+  theta: 0.5
+  bootstrap_B: 10000
+  bootstrap_seed: 12345
+
+logging:
+  log_every: 1
+  debug_terms: false

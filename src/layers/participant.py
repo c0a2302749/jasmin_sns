@@ -20,6 +20,7 @@ def update_R(
     w_sns: float,
     S_R: float,
     b: float,
+    clip: bool = True,
 ) -> tuple[float, float]:
     """参加者1人分のリスク認知 R(t) を計算する (FR-P3)。
 
@@ -32,14 +33,16 @@ def update_R(
         w_sns (float): 社会的影響係数。
         S_R (float): 近傍のリスク認知平均。
         b (float): ベースラインリスク認知。
+        clip (bool): False で [0,1] クリップを外す (B2 の診断専用。
+            既定 True は現行挙動と同一)。
 
     Returns:
         tuple[float, float]: (new_r, r_raw) のタプル。new_r は [0, 1] に
             クリップされた新しい R、r_raw はクリップ前の生の値
-            （天井効果診断・デバッグ用）。
+            （天井効果診断・デバッグ用）。clip=False では new_r=r_raw。
     """
     r_raw = float(w_sys * w_eff + w_sns * S_R + b)
-    new_r = float(np.clip(r_raw, 0.0, 1.0))
+    new_r = r_raw if not clip else float(np.clip(r_raw, 0.0, 1.0))
     return new_r, r_raw
 
 

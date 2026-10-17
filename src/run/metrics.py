@@ -89,7 +89,7 @@ def calculate_metrics(
         world (World): シード確定済みの世界（seed と n_clipped_O0 の取得に用いる）。
         config (Config): 実験設定（T* の上限に model.T_max、二値化に metrics.theta を用いる）。
         W_level (float): 介入アームの介入強度 W。
-        ablation (str): 適用したAblation条件（"none" | "ABL-SYS" | "ABL-SNS" | "ABL-REACT"）。
+        ablation (str): 適用したAblation条件（"none" | "ABL-SYS" | "ABL-SNS" | "ABL-ALPHA" | "ABL-SNS+ALPHA" | "ABL-REACT"）。
 
     Returns:
         dict[str, Any]: io/schema.py の SUMMARY_SCHEMA に合致する1行分の指標辞書。
@@ -138,3 +138,36 @@ def calculate_metrics(
         "n_clipped_R_ctrl": ctrl.n_clipped_R,
         "n_reactance_active": treat.n_reactance_active,
     }
+
+
+def persona_dO_means(
+    ctrl: ArmRecord,
+    treat: ArmRecord,
+    world: World,
+    config: Config,
+) -> dict[str, float]:
+    """T* における型別 ΔO_mean (mean(O_treat - O_ctrl)) を返す。
+
+    全体の dO_mean をペルソナ型で分解したもの。介入効果がどの型で
+    生じているか (5.4.5 のクリップ不可能群の議論) を定量化する。
+
+    Args:
+        ctrl: 介入なしアームの実行記録。
+        treat: 介入ありアームの実行記録。
+        world: シード確定済みの世界 (params の persona ラベルを用いる)。
+        config: 実験設定 (T* の上限に model.T_max を用いる)。
+
+    Returns:
+        {persona名: 群内平均の差} の辞書。該当者がいない型は含めない。
+    """
+    import numpy as np
+
+    t = t_star(ctrl, treat, config)
+    dO = treat.O[t] - ctrl.O[t]
+    labels = np.array([p.persona for p in world.params])
+    out: dict[str, float] = {}
+    for name in sorted(set(labels.tolist())):
+        mask = labels == name
+        if int(np.sum(mask)) > 0:
+            out[name] = float(np.mean(dO[mask]))
+    return out

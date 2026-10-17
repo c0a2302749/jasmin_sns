@@ -207,7 +207,9 @@ def test_F07_ablation_none_is_passthrough(small_config):
 
 
 def test_F07_A06_alpha_beta_gamma_untouched_by_any_ablation(small_config):
-    """いずれのAblation条件でも alpha/beta/gamma 経路は残る (F-07, A6)。"""
+    """SYS/SNS/REACT では alpha/beta/gamma 経路は残る (F-07, A6)。
+    ALPHA 系は alpha のみをゼロ化し、beta/gamma は残す（総効果分解のため）。
+    """
     w = build_world(small_config, seed=10)
 
     for cond in (Ablation.NONE, Ablation.SYS, Ablation.SNS, Ablation.REACT):
@@ -215,6 +217,41 @@ def test_F07_A06_alpha_beta_gamma_untouched_by_any_ablation(small_config):
         np.testing.assert_array_equal(attrs.alpha, w.attrs.alpha)
         np.testing.assert_array_equal(attrs.beta, w.attrs.beta)
         np.testing.assert_array_equal(attrs.gamma, w.attrs.gamma)
+
+    for cond in (Ablation.ALPHA, Ablation.SNS_ALPHA):
+        attrs = apply_ablation(w.params, condition=cond, k_react=1.0)
+        assert np.all(attrs.alpha == 0.0)
+        np.testing.assert_array_equal(attrs.beta, w.attrs.beta)
+        np.testing.assert_array_equal(attrs.gamma, w.attrs.gamma)
+
+
+def test_F07_ablation_alpha_zeroes_only_alpha(small_config):
+    """ABL-ALPHA では alpha のみが 0 になり、w_sys/w_sns は残る。"""
+    w = build_world(small_config, seed=10)
+    before = [(p.w_sys, p.w_sns) for p in w.params]
+
+    attrs = apply_ablation(w.params, condition=Ablation.ALPHA, k_react=1.0)
+
+    assert np.all(attrs.alpha == 0.0)
+    np.testing.assert_array_equal(
+        attrs.w_sys, np.array([b[0] for b in before]))
+    np.testing.assert_array_equal(
+        attrs.w_sns, np.array([b[1] for b in before]))
+    assert [(p.w_sys, p.w_sns) for p in w.params] == before
+    with pytest.raises(ValueError):
+        attrs.alpha[0] = 1.0
+
+
+def test_F07_ablation_sns_alpha_zeroes_both(small_config):
+    """ABL-SNS+ALPHA では w_sns と alpha が 0 になり、w_sys は残る。"""
+    w = build_world(small_config, seed=10)
+
+    attrs = apply_ablation(w.params, condition=Ablation.SNS_ALPHA, k_react=1.0)
+
+    assert np.all(attrs.w_sns == 0.0)
+    assert np.all(attrs.alpha == 0.0)
+    np.testing.assert_array_equal(attrs.w_sys, w.attrs.w_sys)
+    np.testing.assert_array_equal(attrs.beta, w.attrs.beta)
 
 
 def test_F05_persona_share_must_sum_to_one(tmp_path):

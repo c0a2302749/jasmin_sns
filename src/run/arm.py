@@ -57,7 +57,8 @@ def run_arm(
     attrs: Attrs, 
     W: float, 
     config: Config, 
-    debug: bool = False
+    debug: bool = False,
+    clip_R: bool = True,
 ) -> ArmRecord:
     """1アームを T_max まで走らせる。停止条件を満たしても走行は止めない（A10）。
 
@@ -72,6 +73,7 @@ def run_arm(
         W (float): 介入強度。
         config (Config): 実験設定。
         debug (bool): True の場合に項ごとの分解値も記録する。
+        clip_R (bool): False で R の [0,1] クリップを外す (B2 診断専用。既定 True)。
 
     Raises:
         ValueError: 未知の update_mode の場合。
@@ -140,7 +142,8 @@ def run_arm(
                 w_eff=float(w_eff_arr[i]),
                 w_sns=float(attrs.w_sns[i]),
                 S_R=float(s_r),
-                b=float(attrs.b[i])
+                b=float(attrs.b[i]),
+                clip=clip_R,
             )
             if r_raw < 0.0 or r_raw > 1.0:
                 n_clipped_R += 1

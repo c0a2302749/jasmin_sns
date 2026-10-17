@@ -254,7 +254,7 @@ def _check_and_warn(cfg_dict: dict[str, Any]) -> list[str]:
             if not (0.0 <= float(w) <= 1.0):
                 raise ConfigError(f"experiment.W_values の値は[0,1]でなければならない: {w}")
 
-        valid_ablations = {"none", "ABL-SYS", "ABL-SNS", "ABL-REACT"}
+        valid_ablations = {"none", "ABL-SYS", "ABL-SNS", "ABL-ALPHA", "ABL-SNS+ALPHA", "ABL-REACT"}
         for cond in exp["ablation_conditions"]:
             if cond not in valid_ablations:
                 raise ConfigError(f"未知のAblation条件が含まれています: {cond}")

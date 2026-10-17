@@ -35,7 +35,7 @@ def criteria(
         if pol_t > pol0:
             c1_hits += 1
         total_clips += rec.n_clipped_R
-        total_cells += rec.O.shape[0] * rec.O.shape[1]
+        total_cells += (rec.O.shape[0] - 1) * rec.O.shape[1]
         if rec.t_conv is not None:
             c4_hits += 1
 
@@ -48,12 +48,22 @@ def criteria(
         w_eff_vals, _ = governance.calculate_w_eff(W_probe, thetas, k_react)
         c3[persona] = float(np.mean(w_eff_vals < W_probe))
 
+    # C3_pass の自動判定: 反発しやすい型 (>=50%) と反発しにくい型 (<=20%)
+    # の弁別性。テーブル名に依存しないよう max/min で判定する
+    # (persona_A: max=reactant 0.988, min=conformist 0.073 で合格)。
+    c3_vals = list(c3.values())
+    c3_pass = (
+        bool(max(c3_vals) >= 0.50 and min(c3_vals) <= 0.20)
+        if c3_vals else False
+    )
+
     return {
         "C1_baseline_reproduction_rate": c1_rate,
         "C1_pass": c1_rate >= 0.80,
         "C2_ceiling_clip_rate": c2_rate,
         "C2_pass": c2_rate < 0.05,
         "C3_reactance_discriminability_by_persona": c3,
+        "C3_pass": c3_pass,
         "C4_convergence_rate": c4_rate,
         "C4_pass": c4_rate >= 0.95,
     }

@@ -4,7 +4,8 @@
 
 問う問い:
   Q1. W を細かく刻んでも非単調性は本物か (頂点は本当に W=0.5 付近か)
-  Q2. 機構は「W >= 2*theta_react で W_eff が 0 に潰れる」閉形式どおりか
+  Q2. 機構は「W >= (1+k)*theta_react/k（k>0。k=1では2*theta_react）で
+       W_eff が 0 に潰れる」閉形式どおりか
   Q3. 低 theta_react 層だけが効果を失い、平均を引下げているのか
   Q4. 効果の消失は R の経路 (w_sys) を通じて起きているのか
   Q5. 介入ありで天井効果 (R の上側クリップ) が再発しないか (C2 の適用範囲)
@@ -48,9 +49,9 @@ def reconstruct_r_raw(rec, attrs) -> np.ndarray:
 def analytic_w_eff(W: float, theta: np.ndarray, k_react: float) -> np.ndarray:
     """W_eff 閉形式を W で微分可能な形に展開した解析解 (A13 の等価形)。
 
-    W <= theta        : W_eff = W
-    theta < W < 2theta: W_eff = (1+k)*theta - k*W
-    W >= (1+k)*theta  : W_eff = 0
+    W <= theta                          : W_eff = W
+    theta < W < (1+k)*theta/k（k>0）    : W_eff = (1+k)*theta - k*W
+    W >= (1+k)*theta/k（k>0。k=1では2theta）: W_eff = 0
     """
     return np.maximum(0.0, np.minimum(W, (1.0 + k_react) * theta - k_react * W))
 
@@ -222,7 +223,8 @@ def main() -> None:
 
     # --- Q2b: W_eff==0 ⟺ W >= (1+k)*theta の厳密検証 ---
     print()
-    print("  [Q2b] 潰れの閾値の厳密検証: W_eff == 0  ⟺  W >= (1+k)*theta_react")
+    print("  [Q2b] 潰れの閾値の厳密検証: W_eff == 0  ⟺  W >= (1+k)*theta_react/k"
+          "（k>0。k=1では2*theta_react）")
     viol_pos = viol_neg = 0
     for seed in seeds[:10]:
         world = build_world(config, seed)
@@ -232,7 +234,11 @@ def main() -> None:
             weff, _ = governance.calculate_w_eff(
                 W=W, theta_react=theta, k_react=k_react)
             is_zero = weff == 0.0
-            predicted = W >= (1.0 + k_react) * theta
+            if k_react > 0:
+                predicted = W >= (1.0 + k_react) * theta / k_react
+            else:
+                # k=0では W_eff=min(W,θ) のため W>0 で潰れない
+                predicted = np.zeros_like(theta, dtype=bool)
             if np.any(is_zero & ~predicted):
                 viol_pos += 1
             if np.any(predicted & ~is_zero):

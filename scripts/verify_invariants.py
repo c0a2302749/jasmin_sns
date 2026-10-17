@@ -108,7 +108,8 @@ def dynamic_rng_audit(config: Config, seed: int) -> None:
     try:
         attrs = apply_ablation(world.params, Ablation.NONE, config.model.k_react)
         for W in (0.0, 0.5, 1.0):
-            for cond in (Ablation.NONE, Ablation.SYS, Ablation.SNS, Ablation.REACT):
+            for cond in (Ablation.NONE, Ablation.SYS, Ablation.SNS,
+                         Ablation.ALPHA, Ablation.SNS_ALPHA, Ablation.REACT):
                 a = apply_ablation(world.params, cond, config.model.k_react)
                 run_arm(world, a, W=W, config=config)
         run_arm(world, attrs, W=0.25, config=config)
@@ -135,7 +136,8 @@ def world_immutability(config: Config, seed: int) -> None:
         "neighbors": tuple(nb.copy() for nb in world.neighbors),
         "params": list(world.params),
     }
-    for cond in (Ablation.NONE, Ablation.SYS, Ablation.SNS, Ablation.REACT):
+    for cond in (Ablation.NONE, Ablation.SYS, Ablation.SNS,
+                 Ablation.ALPHA, Ablation.SNS_ALPHA, Ablation.REACT):
         attrs = apply_ablation(world.params, cond, config.model.k_react)
         for W in (0.0, 0.25, 0.5, 1.0):
             run_arm(world, attrs, W=W, config=config)
@@ -320,6 +322,8 @@ def ablation_isolation(config: Config, seed: int) -> None:
     for cond, expect_zero in (
         (Ablation.SYS, "w_sys"),
         (Ablation.SNS, "w_sns"),
+        (Ablation.ALPHA, "alpha"),
+        (Ablation.SNS_ALPHA, "w_sns+alpha"),
         (Ablation.REACT, "k_react"),
     ):
         a = apply_ablation(world.params, cond, config.model.k_react)
@@ -328,12 +332,15 @@ def ablation_isolation(config: Config, seed: int) -> None:
             if not np.array_equal(getattr(a, f), getattr(base, f))
         ]
         # ゼロ化の対象确实是値、そしてそれ以外の配列は無変化であること
-        zeroed = (
-            a.k_react == 0.0 if expect_zero == "k_react"
-            else bool(np.all(getattr(a, expect_zero) == 0.0))
-        )
-        ok = (changed == [expect_zero] and zeroed) if expect_zero != "k_react" \
-            else (changed == [] and zeroed)
+        if expect_zero == "k_react":
+            zeroed = a.k_react == 0.0
+            ok = changed == [] and zeroed
+        elif expect_zero == "w_sns+alpha":
+            zeroed = bool(np.all(a.w_sns == 0.0) and np.all(a.alpha == 0.0))
+            ok = changed == ["alpha", "w_sns"] and zeroed
+        else:
+            zeroed = bool(np.all(getattr(a, expect_zero) == 0.0))
+            ok = changed == [expect_zero] and zeroed
         ok_all &= bool(ok)
         report.append(f"{cond.value}: 差分フィールド={changed or 'なし'}, {expect_zero}->0: {zeroed}")
 

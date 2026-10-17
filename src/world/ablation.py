@@ -1,9 +1,17 @@
 """world/ablation.py — F-07: Ablation条件で属性を上書きし、属性配列を1回作る。
 
 設計決定参照:
-- FR-E5, A6: Ablation条件 (none, ABL-SYS, ABL-SNS, ABL-REACT)
+- FR-E5, A6: Ablation条件 (none, ABL-SYS, ABL-SNS, ABL-ALPHA, ABL-SNS+ALPHA, ABL-REACT)
 - A9: k_react=0 によるリアクタンス無効化 (ABL-REACT)
 - D-状態表現: Attrs 内の ndarray 配列は writeable = False で不変化する
+
+総効果の分解 (2x2 要因計画):
+- none: 全経路 on。E_total (増幅を含む総効果)
+- ABL-SNS: w_sns=0 (R経由の社会的影響を除去。O経由 αS_O は残る)
+- ABL-ALPHA: alpha=0 (O経由の直接同調を除去。R経由は残る)
+- ABL-SNS+ALPHA: 両方0。参加者は互いに独立になり、残るのは個人内効果
+  (ネットワークを介さない直接効果)。E_direct。
+- 増幅分 = E_total - E_direct。足し算では閉じないため交互作用も報告すること。
 """
 from __future__ import annotations
 
@@ -18,11 +26,16 @@ class Ablation(StrEnum):
     """Ablation条件を表す列挙型（FR-E5, A6, A9）。
 
     NONE: 上書きなしのベースライン。SYS: w_sys=0。SNS: w_sns=0。
-    REACT: k_react=0（theta_react は残る）。いずれも alpha/beta/gamma には触れない。
+    ALPHA: alpha=0（O経由の同調を除去）。SNS_ALPHA: w_sns=0 かつ alpha=0
+    （参加者を互いに独立にする直接効果条件）。
+    REACT: k_react=0（theta_react は残る）。
+    SYS/SNS/REACT は alpha/beta/gamma には触れない（A6）。
     """
     NONE = "none"
     SYS = "ABL-SYS"
     SNS = "ABL-SNS"
+    ALPHA = "ABL-ALPHA"
+    SNS_ALPHA = "ABL-SNS+ALPHA"
     REACT = "ABL-REACT"
 
 
@@ -72,7 +85,9 @@ def apply_ablation(
     元の params リストおよび ParticipantParams オブジェクトは一切変更されない
     （dataclasses.replace 経由で複製してから上書きする）。
     condition="none" でも必ずこの関数を通し、属性配列を作る場所を1つに保つ。
-    SYS は w_sys のみ、SNS は w_sns のみを 0 にし、alpha/beta/gamma には触れない（A6）。
+    SYS は w_sys のみ、SNS は w_sns のみ、ALPHA は alpha のみを 0 にし、
+    SNS+ALPHA は w_sns と alpha の両方を 0 にする。
+    SYS/SNS は beta/gamma には触れない（A6）。
     REACT は k_react のみを 0 にし、theta_react 配列は残す（A9）。
 
     Args:
@@ -94,6 +109,10 @@ def apply_ablation(
         params = [replace(p, w_sys=0.0) for p in params]
     elif condition == Ablation.SNS:
         params = [replace(p, w_sns=0.0) for p in params]
+    elif condition == Ablation.ALPHA:
+        params = [replace(p, alpha=0.0) for p in params]
+    elif condition == Ablation.SNS_ALPHA:
+        params = [replace(p, w_sns=0.0, alpha=0.0) for p in params]
 
     (
         alphas, betas, gammas,
