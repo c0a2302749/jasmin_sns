@@ -1,0 +1,36 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/default.yaml
+uncommitted:
+M scripts/analyze_dose_response.py
+ M scripts/select_persona.py
+ M scripts/verify_invariants.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/config.py
+ M src/run/checks.py
+ M src/run/metrics.py
+ M src/world/ablation.py
+ M tests/test_world.py
+?? scripts/analyze_ci_emaj.py
+?? scripts/check_emaj_rates.py
+?? scripts/compare_crn.py
+?? scripts/decompose_effect.py
+?? scripts/diagnose_beta0.py
+?? scripts/negative_controls.py
+?? scripts/retest_peak.py
+?? scripts/runlog.py
+?? scripts/sensitivity.py
+?? scripts/verify_fj.py
+?? tests/test_remaining.py
+seeds=0..29 (30) dims=p
+------------------------------------------------------------------------------------------------
+========================================================================================================================
+感度分析: seeds=0..29 (30) W=(0.5, 1.0)
+基準: E_rate(0.5)<0 の向き + ABL-SYS ゼロ + 非単調(対ペア差が負に有意)
+========================================================================================================================
+  条件          E(0.5)    E(1.0)    ctrl率  向き負?  非単調?  d=E.5-E1.0 [95%CI]       ABL-SYSゼロ?  分離?
+  p=0.0         -0.02467  -0.01567  0.030  Y      Y       -0.00900 [-0.01233,-0.00567]  Y          Y
+  p=0.05        -0.02567  -0.01733  0.031  Y      Y       -0.00833 [-0.01167,-0.00500]  Y          Y
+  p=0.15        -0.02567  -0.01633  0.031  Y      Y       -0.00933 [-0.01333,-0.00567]  Y          Y
+  p=0.3         -0.02567  -0.01633  0.031  Y      Y       -0.00933 [-0.01267,-0.00633]  Y          Y
+  p=1.0         -0.02467  -0.01633  0.030  Y      Y       -0.00833 [-0.01133,-0.00533]  Y          Y

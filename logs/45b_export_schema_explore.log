@@ -1,0 +1,44 @@
+commit=407fb5146f1316f7979dcb75b86e18e4cad5c744 DIRTY
+config=configs/main_o0_080.yaml
+uncommitted:
+A artifacts/hashes_3f86_seeds60-89.json
+ A artifacts/schema_summary_seeds60-89_3f86.csv
+export_schema_csv seeds=0..29 (30) conds=('none', 'ABL-SNS', 'ABL-ALPHA', 'ABL-SNS+ALPHA') W=(0.0, 0.5, 0.55, 0.6, 0.75, 1.0)
+------------------------------------------------------------------------------------------------
+================================================================================================
+スキーマCSV出力: seeds=0..29 (30) config_hash=e4bd
+================================================================================================
+rows=720 columns=18
+-> artifacts/schema_summary_seeds0-29_e4bd.csv
+{
+  "csv": "schema_summary_seeds0-29_e4bd.csv",
+  "csv_sha256": "84ea3e0200eb9aff36420d3c494758325b7b9064a44515e5b41c59b4ec3b2fdd",
+  "rows": 720,
+  "columns": [
+    "seed",
+    "W",
+    "ablation_condition",
+    "E_rate",
+    "E_maj",
+    "flip_rate",
+    "dO_mean",
+    "pol_within_treat",
+    "pol_within_ctrl",
+    "pol_between_treat",
+    "pol_between_ctrl",
+    "T_star",
+    "t_conv_treat",
+    "t_conv_ctrl",
+    "n_clipped_O0",
+    "n_clipped_R_treat",
+    "n_clipped_R_ctrl",
+    "n_reactance_active"
+  ],
+  "config": "configs/main_o0_080.yaml",
+  "config_hash": "e4bd",
+  "seed_start": 0,
+  "n_seeds": 30,
+  "git_commit": "407fb5146f1316f7979dcb75b86e18e4cad5c744",
+  "git_dirty": true,
+  "generated_at": "2026-10-17T18:57:00"
+}

@@ -1,0 +1,25 @@
+commit=613ddb17fc4eba6293ec7da22077c705a0caa865 DIRTY
+config=configs/default.yaml
+uncommitted:
+?? ci_o80.log
+?? scripts/neighbor_invariance_check.py
+------------------------------------------------------------------------------------------------
+================================================================================
+近傍不変性の検査: ABL-SNS+ALPHA は近傍非依存 / none は近傍に依存 (discriminating)
+config=configs/default.yaml seeds=0..29 W=0.5
+================================================================================
+
+[INVARIANCE] ABL-SNS+ALPHA: 近傍を変えても SNS_ALPHA 軌跡・結果が不変
+  max|ΔO| (全軌跡)     = 0.000e+00  (0 であるべき)
+  max|ΔO| (評価時点)   = 0.000e+00  (0 であるべき)
+  max|Δ賛成率|          = 0.000e+00  (0 であるべき)
+  t_conv 不一致シード数 = 0 / 30
+  [PASS] NEIGHBOR_INVARIANT_IN_BOTH_ZERO: 近傍トポロジーの変化が SNS_ALPHA 結果に伝播しない
+
+[DISCRIMINATING] none: 対照として近傍差し替えで結果が変わること
+  max|ΔO| (全軌跡)  = 1.997e-01  (>0 であるべき)
+  max|Δ賛成率|       = 1.000e-02  (>0 であるべき)
+  [PASS] NEIGHBOR_SENSITIVE_IN_NONE: 検査が自明でなく近傍の影響を捉えている
+
+総合: PASS
+EXITCODE=True

@@ -1,0 +1,10 @@
+commit=407fb5146f1316f7979dcb75b86e18e4cad5c744 clean
+config=configs/main_o0_080.yaml
+------------------------------------------------------------------------------------------------
+
+## 設定の健全性確認 2026-10-17
+
+- パターンA: {'C1_baseline_reproduction_rate': 0.9, 'C1_pass': True, 'C2_ceiling_clip_rate': 0.0, 'C2_pass': True, 'C3_reactance_discriminability_by_persona': {'independent': 0.508, 'cautious': 0.2613333333333333, 'conformist': 0.07333333333333333, 'reactant': 0.988}, 'C3_pass': True, 'C4_convergence_rate': 1.0, 'C4_pass': True}
+- パターンB: {'C1_baseline_reproduction_rate': 0.8666666666666667, 'C1_pass': True, 'C2_ceiling_clip_rate': 0.0, 'C2_pass': True, 'C3_reactance_discriminability_by_persona': {'info_seeker': 0.255, 'conformist': 0.08190476190476191, 'cautious': 0.37066666666666664, 'risk_overestimator': 0.7555555555555555, 'agitator': 0.9866666666666667}, 'C3_pass': True, 'C4_convergence_rate': 1.0, 'C4_pass': True}
+- C1は参考値（合否外）: A=0.900, B=0.867
+- 健全性: 両表ともC2〜C4を満たす。主設定はpersona_A、persona_Bは感度分析に用いる

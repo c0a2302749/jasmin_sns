@@ -1,0 +1,27 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/default.yaml
+uncommitted:
+M scripts/analyze_dose_response.py
+ M scripts/select_persona.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/run/checks.py
+ M src/run/metrics.py
+?? scripts/analyze_ci_emaj.py
+?? scripts/check_emaj_rates.py
+?? scripts/compare_crn.py
+?? scripts/diagnose_beta0.py
+?? scripts/negative_controls.py
+?? scripts/retest_peak.py
+?? scripts/runlog.py
+?? scripts/sensitivity.py
+?? scripts/verify_fj.py
+?? tests/test_remaining.py
+seeds=0..29 (30) only=personab
+------------------------------------------------------------------------------------------------
+
+
+================================================================================================
+persona_B感度: 非単調 (|E0.5|>|E1.0|) と ABL-SYS消失
+================================================================================================
+  persona_B: E(0.5)=-0.00767 E(1.0)=-0.00633 d=-0.00133 [-0.00267,-0.00033] 非単調(対ペア有意)=Y ABL-SYSゼロ=Y

@@ -1,0 +1,60 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/default.yaml
+uncommitted:
+M configs/default.yaml
+ M configs/default_W6.yaml
+ A scripts/aggregate_sens.py
+ A scripts/analyze_ci_emaj.py
+ M scripts/analyze_dose_response.py
+ A scripts/check_emaj_rates.py
+ A scripts/compare_crn.py
+ A scripts/decompose_effect.py
+ A scripts/diagnose_beta0.py
+ A scripts/negative_controls.py
+ A scripts/retest_peak.py
+ A scripts/runlog.py
+ M scripts/select_persona.py
+ A scripts/sensitivity.py
+ A scripts/verify_fj.py
+ M scripts/verify_invariants.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/config.py
+ M src/run/checks.py
+ M src/run/metrics.py
+ M src/world/ablation.py
+ A tests/test_remaining.py
+ M tests/test_world.py
+?? configs/run_o0_08.yaml
+?? configs/run_o0_085.yaml
+?? run_o0_8.py
+?? run_o0_85.py
+?? scripts/select_main_experiment.py
+A4 explore=0..29 confirm=60..89 B=10000
+------------------------------------------------------------------------------------------------
+====================================================================================================
+A4. 主実験 O0平均の選定と W* 確認
+====================================================================================================
+事前固定した選定基準 (記録日 2026-10-17): 介入なし賛成率 in [0.4,0.6] かつ 初期意見クリップ率 < 0.05
+  固定前に観測済みの値 (A1 core走査, seeds 0-29, W=0.5/1.0):
+    mu=0.8 : ctrl率 0.491, E(0.5)=-0.21033, E(1.0)=-0.11767
+    mu=0.85: ctrl率 0.533, E(0.5)=-0.18267, E(1.0)=-0.10900
+  探索 seeds=0..29 (30), 確認 seeds=60..89 (30), B=10000
+
+[探索] W 走査 (seeds 0-29, 0.05刻み)
+  mu    ctrl率  clip率   基準  W*     |E(W*)|max  E(W*)      E(1.0)
+  0.80  0.4913  0.0260    合格  0.60  0.21100    -0.21100  -0.11767
+       E_rate: W=0.10:-0.05633, W=0.25:-0.13367, W=0.50:-0.21033, W=0.60:-0.21100, W=0.75:-0.18600, W=1.00:-0.11767
+  0.85  0.5327  0.0730   不合格  0.55  0.18867    -0.18867  -0.10900
+       E_rate: W=0.10:-0.05767, W=0.25:-0.11633, W=0.50:-0.18267, W=0.55:-0.18867, W=0.75:-0.17133, W=1.00:-0.10900
+
+[確認] seeds 60-89 で W* と W=1.0 (絶対値差, 対ペア, B=10000)
+  mu    W*     E(W*)      E(1.0)     |E(W*)|-|E(1.0)| [95%CI]           有意  ctrl率  clip率  E_maj(W*)
+  0.80  0.60  -0.20600  -0.11367  +0.09233 [+0.08200,+0.10333]     Y  0.4887  0.0197  mean=-0.33 p(-1)=0.33 p(0)=0.67 p(+1)=0.00
+  0.85  0.55  -0.18133  -0.10067  +0.08067 [+0.07167,+0.09000]     Y  0.5270  0.0643  mean=-0.97 p(-1)=0.97 p(0)=0.03 p(+1)=0.00
+
+[参考] 確認シードでの E の95%CI
+  mu=0.80 W*=0.60: E(W*)=-0.20600[-0.21967,-0.19233]  E(1.0)=-0.11367[-0.12433,-0.10267]
+  mu=0.85 W*=0.55: E(W*)=-0.18133[-0.19467,-0.16800]  E(1.0)=-0.10067[-0.11167,-0.09000]
+
+→ 選定基準を満たす候補: 0.80

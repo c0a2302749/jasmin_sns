@@ -1,0 +1,30 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/default.yaml
+uncommitted:
+M scripts/analyze_dose_response.py
+ M scripts/select_persona.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/run/checks.py
+ M src/run/metrics.py
+?? scripts/analyze_ci_emaj.py
+?? scripts/check_emaj_rates.py
+?? scripts/compare_crn.py
+?? scripts/diagnose_beta0.py
+?? scripts/negative_controls.py
+?? scripts/retest_peak.py
+?? scripts/runlog.py
+?? scripts/sensitivity.py
+?? scripts/verify_fj.py
+?? tests/test_remaining.py
+seeds=0..29 (30)
+------------------------------------------------------------------------------------------------
+================================================================================================
+β=0 診断: 同一世界・W=0 で baseline / β=0 / α=0(対照) の C1 を比較
+================================================================================================
+  baseline       C1率=0.967 (29/30)  Δpol_between平均=+0.10546  Δmean(O)平均=-0.22971
+  beta=0         C1率=0.000 (0/30)  Δpol_between平均=-0.06232  Δmean(O)平均=+0.00136
+  alpha=0(対照)    C1率=1.000 (30/30)  Δpol_between平均=+0.15568  Δmean(O)平均=-0.23168
+
+  → 判定: β=0 で C1 が崩れた (-βR がベースライン再現の主因, H1 を支持)。
+  → 対照 α=0 の C1率=1.000 (同調を消したときの残差が -βR+初期固執の寄与の目安)。

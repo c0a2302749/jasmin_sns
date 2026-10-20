@@ -1,0 +1,67 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/default.yaml
+uncommitted:
+M configs/default.yaml
+ M configs/default_W6.yaml
+ A scripts/aggregate_sens.py
+ A scripts/analyze_ci_emaj.py
+ M scripts/analyze_dose_response.py
+ A scripts/check_emaj_rates.py
+ A scripts/compare_crn.py
+ A scripts/decompose_effect.py
+ A scripts/diagnose_beta0.py
+ A scripts/negative_controls.py
+ A scripts/retest_peak.py
+ A scripts/runlog.py
+ M scripts/select_persona.py
+ A scripts/sensitivity.py
+ A scripts/verify_fj.py
+ M scripts/verify_invariants.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/config.py
+ M src/layers/participant.py
+ M src/run/arm.py
+ M src/run/checks.py
+ M src/run/metrics.py
+ M src/world/ablation.py
+ A tests/test_remaining.py
+ M tests/test_world.py
+?? configs/MAIN_EXPERIMENT_NOTE.txt
+?? configs/main_o0_080.yaml
+?? scripts/b1_contribution.py
+?? scripts/b2_mechanism.py
+?? scripts/select_main_experiment.py
+B2 variant=theta05 mu=0.8 seeds=0..29 clipR=True
+------------------------------------------------------------------------------------------------
+========================================================================================
+B2 機構切り分け: variant=theta05 mu=0.8 seeds=0..29 (30) clip_R=True
+========================================================================================
+  W      E_rate      平均W_eff   |E_rate|
+  0.05   -0.02967   0.0500     0.02967
+  0.10   -0.05700   0.1000     0.05700
+  0.15   -0.09333   0.1500     0.09333
+  0.20   -0.12000   0.2000     0.12000
+  0.25   -0.14800   0.2500     0.14800
+  0.30   -0.17333   0.3000     0.17333
+  0.35   -0.19833   0.3500     0.19833
+  0.40   -0.21900   0.4000     0.21900
+  0.45   -0.24167   0.4500     0.24167
+  0.50   -0.27067   0.5000     0.27067
+  0.55   -0.24167   0.4500     0.24167
+  0.60   -0.21900   0.4000     0.21900
+  0.65   -0.19833   0.3500     0.19833
+  0.70   -0.17333   0.3000     0.17333
+  0.75   -0.14800   0.2500     0.14800
+  0.80   -0.12000   0.2000     0.12000
+  0.85   -0.09333   0.1500     0.09333
+  0.90   -0.05700   0.1000     0.05700
+  0.95   -0.02967   0.0500     0.02967
+  1.00   +0.00000   0.0000     0.00000
+
+  ピーク W=0.50 (|E_rate|=0.27067)  減少開始 W=0.55
+  d_s(E_peak-E_tail)=-0.27067 95%CI [-0.28433,-0.25767] significant=True
+  全域で単調増加か: False  → 非単調が残る
+
+  E_rate を平均 W_eff の関数として (W: meanWeff -> E_rate):
+   0.05:0.050->-0.0297  0.10:0.100->-0.0570  0.15:0.150->-0.0933  0.20:0.200->-0.1200  0.25:0.250->-0.1480  0.30:0.300->-0.1733  0.35:0.350->-0.1983  0.40:0.400->-0.2190  0.45:0.450->-0.2417  0.50:0.500->-0.2707  0.55:0.450->-0.2417  0.60:0.400->-0.2190  0.65:0.350->-0.1983  0.70:0.300->-0.1733  0.75:0.250->-0.1480  0.80:0.200->-0.1200  0.85:0.150->-0.0933  0.90:0.100->-0.0570  0.95:0.050->-0.0297  1.00:0.000->+0.0000

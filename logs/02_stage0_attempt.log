@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/manaka/jasmin_sns/scripts/select_persona.py", line 11, in <module>
+    from analysis.persona_select import criteria
+ModuleNotFoundError: No module named 'analysis'

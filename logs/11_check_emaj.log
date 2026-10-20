@@ -1,0 +1,42 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/default.yaml
+uncommitted:
+M scripts/analyze_dose_response.py
+ M scripts/select_persona.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/run/checks.py
+ M src/run/metrics.py
+?? scripts/analyze_ci_emaj.py
+?? scripts/check_emaj_rates.py
+?? scripts/compare_crn.py
+?? scripts/diagnose_beta0.py
+?? scripts/negative_controls.py
+?? scripts/retest_peak.py
+?? scripts/runlog.py
+?? scripts/sensitivity.py
+?? scripts/verify_fj.py
+?? tests/test_remaining.py
+seeds=0..29 (30) theta=0.5
+------------------------------------------------------------------------------------------------
+================================================================================================
+B1a. 介入なし賛成率 rate_ctrl の水準 (既定設定、単腕t_conv評価)
+================================================================================================
+  mean(rate_ctrl)=0.03067  min=0.000 max=0.080
+  mean(O0標本)=0.50392 mean(O_ctrl)=0.27421 シフト(標本基準)=-0.22971
+  n_clipped_O0=0/3000 = 0.00000 (5σ離れ・影響ほぼなしの確認)
+  rate_ctrl>=0.5 のシード数: 0/30
+  rate_ctrl>=0.5 が0件なら、両アームは常に0.5の同側→E_maj=0が必然。
+  分布: [0.0,0.1):30, [0.1,0.2):0, [0.2,0.3):0, [0.3,0.4):0, [0.4,0.5):0, [0.5,0.6):0, [0.6,0.8):0, [0.8,1.0):0
+
+================================================================================================
+B1b. O0平均0.7/0.9での E_rate / E_maj (W=0.45,0.5,1.0, std=0.1継承)
+================================================================================================
+  mu=0.7 W=0.45 E_rate=-0.21233 mean(rate_ctrl)=0.351 mean(rate_treat)=0.139 E_maj: mean=+0.000 p(-1)=0.000 p(0)=1.000 p(+1)=0.000
+  mu=0.7 W=0.50 E_rate=-0.21533 mean(rate_ctrl)=0.351 mean(rate_treat)=0.136 E_maj: mean=+0.000 p(-1)=0.000 p(0)=1.000 p(+1)=0.000
+  mu=0.7 W=1.00 E_rate=-0.10933 mean(rate_ctrl)=0.351 mean(rate_treat)=0.242 E_maj: mean=+0.000 p(-1)=0.000 p(0)=1.000 p(+1)=0.000
+  mu=0.7 n_clipped_O0=6/3000 = 0.0020
+  mu=0.9 W=0.45 E_rate=-0.16333 mean(rate_ctrl)=0.569 mean(rate_treat)=0.406 E_maj: mean=-1.000 p(-1)=1.000 p(0)=0.000 p(+1)=0.000
+  mu=0.9 W=0.50 E_rate=-0.17033 mean(rate_ctrl)=0.569 mean(rate_treat)=0.399 E_maj: mean=-1.000 p(-1)=1.000 p(0)=0.000 p(+1)=0.000
+  mu=0.9 W=1.00 E_rate=-0.11367 mean(rate_ctrl)=0.569 mean(rate_treat)=0.455 E_maj: mean=-0.967 p(-1)=0.967 p(0)=0.033 p(+1)=0.000
+  mu=0.9 n_clipped_O0=505/3000 = 0.1683

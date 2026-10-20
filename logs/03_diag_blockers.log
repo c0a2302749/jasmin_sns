@@ -1,0 +1,14 @@
+======================================================================
+[1] configs/default.yaml の load()
+    ConfigError: 設定の形式が不正: LoggingConfig.__init__() missing 1 required positional argument: 'debug_terms'
+======================================================================
+[2] ペルソナ表の読込 (mu_react キー期待)
+  -- configs/persona_A.yaml
+    OK: 4 rows, keys=['alpha', 'b', 'beta', 'gamma', 'mu_theta', 'name', 'share', 'w_sns', 'w_sys']
+    mu_react: KeyError 'mu_react'  -> persona.py:148 はこれで落ちる
+  -- configs/persona_B.yaml
+    OK: 5 rows, keys=['alpha', 'b', 'beta', 'gamma', 'mu_theta', 'name', 'share', 'w_sns', 'w_sys']
+    mu_react: KeyError 'mu_react'  -> persona.py:148 はこれで落ちる
+======================================================================
+[3] docs/plan.md の有無
+    exists=False

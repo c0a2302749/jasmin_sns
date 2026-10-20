@@ -1,0 +1,11 @@
+commit=407fb5146f1316f7979dcb75b86e18e4cad5c744 clean
+config=configs/default.yaml
+W=0.2 (検証条件)
+------------------------------------------------------------------------------------------------
+seed 0: iters=78 max|direct-iter|=2.159e-13 PASS n_clip_R=0
+seed 1: iters=79 max|direct-iter|=1.919e-13 PASS n_clip_R=0
+seed 2: iters=71 max|direct-iter|=1.957e-13 PASS n_clip_R=0
+seed 3: iters=83 max|direct-iter|=2.334e-13 PASS n_clip_R=0
+seed 4: iters=81 max|direct-iter|=1.626e-13 PASS n_clip_R=0
+worst max err over 5 seeds: 2.334e-13
+ALL PASS

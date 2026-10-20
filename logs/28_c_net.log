@@ -1,0 +1,53 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/main_o0_080.yaml
+uncommitted:
+M configs/default.yaml
+ M configs/default_W6.yaml
+ A scripts/aggregate_sens.py
+ A scripts/analyze_ci_emaj.py
+ M scripts/analyze_dose_response.py
+ A scripts/check_emaj_rates.py
+ A scripts/compare_crn.py
+ A scripts/decompose_effect.py
+ A scripts/diagnose_beta0.py
+ A scripts/negative_controls.py
+ A scripts/retest_peak.py
+ A scripts/runlog.py
+ M scripts/select_persona.py
+ A scripts/sensitivity.py
+ A scripts/verify_fj.py
+ M scripts/verify_invariants.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/config.py
+ M src/layers/participant.py
+ M src/run/arm.py
+ M src/run/checks.py
+ M src/run/metrics.py
+ M src/world/ablation.py
+ A tests/test_remaining.py
+ M tests/test_world.py
+?? configs/MAIN_EXPERIMENT_NOTE.txt
+?? configs/main_o0_080.yaml
+?? configs/persona_C.yaml
+?? scripts/b1_contribution.py
+?? scripts/b2_mechanism.py
+?? scripts/c_robustness.py
+?? scripts/select_main_experiment.py
+C dim=net mu=0.8 seeds=0..14 step=0.1
+------------------------------------------------------------------------------------------------
+====================================================================================================
+C ロバストネス: dim=net mu=0.8 n_seeds=15 W刻み=0.1
+====================================================================================================
+  ネットワーク=WS
+  WS             peakW=0.50 |E|=0.21000  d(E_peak-E_tail)=-0.09800[-0.11400,-0.08067]  単調=False  非単調=残る
+       W=0.10:-0.0513 W=0.20:-0.1013 W=0.30:-0.1453 W=0.40:-0.1793 W=0.50:-0.2100 W=0.60:-0.2067 W=0.70:-0.1940 W=0.80:-0.1653 W=0.90:-0.1380 W=1.00:-0.1120
+       平均W_eff: W=0.10:0.097 W=0.20:0.181 W=0.30:0.249 W=0.40:0.306 W=0.50:0.345 W=0.60:0.361 W=0.70:0.348 W=0.80:0.311 W=0.90:0.257 W=1.00:0.201
+  ネットワーク=ER
+  ER             peakW=0.60 |E|=0.21733  d(E_peak-E_tail)=-0.10267[-0.11333,-0.09133]  単調=False  非単調=残る
+       W=0.10:-0.0607 W=0.20:-0.1113 W=0.30:-0.1500 W=0.40:-0.1933 W=0.50:-0.2160 W=0.60:-0.2173 W=0.70:-0.1980 W=0.80:-0.1707 W=0.90:-0.1407 W=1.00:-0.1147
+       平均W_eff: W=0.10:0.097 W=0.20:0.181 W=0.30:0.249 W=0.40:0.306 W=0.50:0.345 W=0.60:0.361 W=0.70:0.348 W=0.80:0.311 W=0.90:0.257 W=1.00:0.201
+  ネットワーク=BA
+  BA             peakW=0.50 |E|=0.23200  d(E_peak-E_tail)=-0.09800[-0.11467,-0.08200]  単調=False  非単調=残る
+       W=0.10:-0.0693 W=0.20:-0.1273 W=0.30:-0.1700 W=0.40:-0.2040 W=0.50:-0.2320 W=0.60:-0.2307 W=0.70:-0.2147 W=0.80:-0.1920 W=0.90:-0.1627 W=1.00:-0.1340
+       平均W_eff: W=0.10:0.097 W=0.20:0.181 W=0.30:0.249 W=0.40:0.306 W=0.50:0.345 W=0.60:0.361 W=0.70:0.348 W=0.80:0.311 W=0.90:0.257 W=1.00:0.201

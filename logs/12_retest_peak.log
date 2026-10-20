@@ -1,0 +1,26 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/default.yaml
+uncommitted:
+M scripts/analyze_dose_response.py
+ M scripts/select_persona.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/run/checks.py
+ M src/run/metrics.py
+?? scripts/analyze_ci_emaj.py
+?? scripts/check_emaj_rates.py
+?? scripts/compare_crn.py
+?? scripts/diagnose_beta0.py
+?? scripts/negative_controls.py
+?? scripts/retest_peak.py
+?? scripts/runlog.py
+?? scripts/sensitivity.py
+?? scripts/verify_fj.py
+?? tests/test_remaining.py
+seeds=30..59 (30) B=2000
+------------------------------------------------------------------------------------------------
+================================================================================================
+B2. 再検定 seeds=30..59 (30) W=0.45 vs 1.00
+================================================================================================
+  mean(E_0.45)=-0.03100 mean(E_1.0)=-0.01567
+  d_s平均 -0.01533 95%CI [-0.01933, -0.01133] significant=True (旧: -0.00933 [-0.01333,-0.00567] True)

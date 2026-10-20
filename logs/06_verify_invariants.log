@@ -1,0 +1,74 @@
+設定: configs/default.yaml
+  n=100, k=4, p=0.15, T_max=500, eps=0.0001, S=2.0, k_react=1.0
+  persona table=persona_A, nu=10.0
+  検証シード: 0..9 (10本)
+
+==============================================================================
+[RNG] 乱数生成境界の静的監査 (rng.py のみが default_rng を生成してよい)
+==============================================================================
+  [PASS] RNG_BOUNDARY_STATIC: np.random.* の呼び出しは rng.py の default_rng/SeedSequence のみ
+
+==============================================================================
+[RNG] 動的監査: 初期化後 (world 完成後) に乱数が消費されないこと
+==============================================================================
+  [PASS] RNG_CONSUMED_AFTER_WORLD: build_world 完了後に default_rng 呼び出し 0 回 (W=0/0.5/1.0 x 4 ablation 条件 + 追加1本を実行)
+
+==============================================================================
+[ISO] World 不変性: 異なる W / 異なる Ablation を実行しても世界が変わらない
+==============================================================================
+  [PASS] WORLD_UNCHANGED_AFTER_ARMS: O0/R0/update_order/neighbors/params すべて実行前後で一致
+  [PASS] WORLD_ARRAYS_FROZEN: O0/R0/update_order/neighbors が全て writeable=False
+
+==============================================================================
+[W0] 反実仮想性: 介入なし (W=0) を独立に2本実行 → 全ターン bit 一致
+==============================================================================
+  [PASS] W0_BIT_IDENTICAL: seed0:W0=OK,T0=OK,O_hash=53380478,R_hash=5759783; seed1:W0=OK,T0=OK,O_hash=16081981,R_hash=10774520; seed2:W0=OK,T0=OK,O_hash=18991752,R_hash=99856121; seed3:W0=OK,T0=OK,O_hash=17066899,R_hash=84416574; seed4:W0=OK,T0=OK,O_hash=14656360,R_hash=64804629; seed5:W0=OK,T0=OK,O_hash=21072271,R_hash=16476263; seed6:W0=OK,T0=OK,O_hash=84945535,R_hash=78408800; seed7:W0=OK,T0=OK,O_hash=75977286,R_hash=42718905; seed8:W0=OK,T0=OK,O_hash=88445525,R_hash=95940669; seed9:W0=OK,T0=OK,O_hash=39052459,R_hash=91351538
+  [PASS] W0_CHECK_IS_DISCRIMINATING: 同一シード・同一世界でも W=0 と W=1.0 の O は異なる (max|ΔO|=0.169055)
+
+==============================================================================
+[SYS] 経路分離 ABL-SYS: w_sys=0 → W に依存せず全軌跡が bit 一致
+==============================================================================
+  [PASS] ABL_SYS_BITWISE_AND_ZERO_EFFECT: seed0/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed0/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed0/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed0/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed1/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed1/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed1/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed1/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed2/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed2/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed2/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed2/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed3/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed3/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed3/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed3/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed4/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed4/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed4/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed4/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed5/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed5/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed5/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed5/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed6/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed6/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed6/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed6/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed7/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed7/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed7/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed7/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed8/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed8/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed8/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed8/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed9/W=0.25:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed9/W=0.5:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed9/W=0.75:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00; seed9/W=1.0:bit=OK,E_rate=0.0,flip=0.0,dO=0.0e+00
+
+==============================================================================
+[SNS] 経路分離 ABL-SNS: w_sns=0 → R が近傍非依存の閉形式 R=Clip(w_sys·W_eff+b) に一致
+==============================================================================
+  [PASS] ABL_SNS_R_CLOSED_FORM: seed0/W=0.25:check=OK,max|R-式|=0.000e+00; seed0/W=0.5:check=OK,max|R-式|=0.000e+00; seed0/W=1.0:check=OK,max|R-式|=0.000e+00; seed1/W=0.25:check=OK,max|R-式|=0.000e+00; seed1/W=0.5:check=OK,max|R-式|=0.000e+00; seed1/W=1.0:check=OK,max|R-式|=0.000e+00; seed2/W=0.25:check=OK,max|R-式|=0.000e+00; seed2/W=0.5:check=OK,max|R-式|=0.000e+00; seed2/W=1.0:check=OK,max|R-式|=0.000e+00; seed3/W=0.25:check=OK,max|R-式|=0.000e+00; seed3/W=0.5:check=OK,max|R-式|=0.000e+00; seed3/W=1.0:check=OK,max|R-式|=0.000e+00; seed4/W=0.25:check=OK,max|R-式|=0.000e+00; seed4/W=0.5:check=OK,max|R-式|=0.000e+00; seed4/W=1.0:check=OK,max|R-式|=0.000e+00; seed5/W=0.25:check=OK,max|R-式|=0.000e+00; seed5/W=0.5:check=OK,max|R-式|=0.000e+00; seed5/W=1.0:check=OK,max|R-式|=0.000e+00; seed6/W=0.25:check=OK,max|R-式|=0.000e+00; seed6/W=0.5:check=OK,max|R-式|=0.000e+00; seed6/W=1.0:check=OK,max|R-式|=0.000e+00; seed7/W=0.25:check=OK,max|R-式|=0.000e+00; seed7/W=0.5:check=OK,max|R-式|=0.000e+00; seed7/W=1.0:check=OK,max|R-式|=0.000e+00; seed8/W=0.25:check=OK,max|R-式|=0.000e+00; seed8/W=0.5:check=OK,max|R-式|=0.000e+00; seed8/W=1.0:check=OK,max|R-式|=0.000e+00; seed9/W=0.25:check=OK,max|R-式|=0.000e+00; seed9/W=0.5:check=OK,max|R-式|=0.000e+00; seed9/W=1.0:check=OK,max|R-式|=0.000e+00
+  [PASS] SNS_CHECK_IS_DISCRIMINATING: none 条件では閉形式からの乖離 max|R-式|=0.634091 (社会的影響が R を動かしている)
+
+==============================================================================
+[REACT] 経路分離 ABL-REACT: k_react=0 → W_eff = min(W, theta_react) の飽和 (A9)
+==============================================================================
+  [PASS] ABL_REACT_SATURATES_NOT_ATTENUATES: seed0:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.3890 vs mean(W_eff|k=1)=0.3261,k=0側のゼロ要素=0,k=1側のゼロ要素=22,n_active=50; seed1:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.4119 vs mean(W_eff|k=1)=0.3613,k=0側のゼロ要素=0,k=1側のゼロ要素=19,n_active=38; seed2:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.3898 vs mean(W_eff|k=1)=0.3259,k=0側のゼロ要素=0,k=1側のゼロ要素=24,n_active=46; seed3:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.4127 vs mean(W_eff|k=1)=0.3639,k=0側のゼロ要素=0,k=1側のゼロ要素=20,n_active=40; seed4:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.4055 vs mean(W_eff|k=1)=0.3492,k=0側のゼロ要素=0,k=1側のゼロ要素=17,n_active=46; seed5:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.4155 vs mean(W_eff|k=1)=0.3594,k=0側のゼロ要素=0,k=1側のゼロ要素=15,n_active=41; seed6:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.3970 vs mean(W_eff|k=1)=0.3410,k=0側のゼロ要素=0,k=1側のゼロ要素=19,n_active=52; seed7:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.4032 vs mean(W_eff|k=1)=0.3397,k=0側のゼロ要素=0,k=1側のゼロ要素=18,n_active=49; seed8:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.4029 vs mean(W_eff|k=1)=0.3487,k=0側のゼロ要素=0,k=1側のゼロ要素=20,n_active=45; seed9:k_react=0.0,max|W_eff-min(W,θ)|=2.8e-17,mean(W_eff|k=0)=0.3983 vs mean(W_eff|k=1)=0.3463,k=0側のゼロ要素=0,k=1側のゼロ要素=22,n_active=46
+  [PASS] REACT_SATURATION_IS_RESIDUAL: W=1.0 でも 100/100 人の W_eff が θ_react で頭打ちになる (A9 の『飽和のみ』の帰結。W_eff==W ではない点に注意)
+
+==============================================================================
+[MUT] 交絡排除: Ablation は params を変更せず、対象経路のみをゼロ化する
+==============================================================================
+  [PASS] ABLATION_TOUCHES_ONLY_TARGET_PATH: ABL-SYS: 差分フィールド=['w_sys'], w_sys->0: True; ABL-SNS: 差分フィールド=['w_sns'], w_sns->0: True; ABL-REACT: 差分フィールド=なし, k_react->0: True
+  [PASS] PARAMS_NOT_MUTATED: 4条件の apply_ablation 適用後も world.params は原本と完全一致 (dataclasses.replace 経由)
+
+==============================================================================
+[RNG2] ダイナミックレンジ: none 条件で W>0 の因果効果が非ゼロか
+==============================================================================
+  [PASS] EFFECT_MEASURABLE_AT_W_GT_0: W=0.25: E_rate mean=-0.0210 (|max|=0.0400), flip=0.0210, dO_mean=-0.06654; W=0.50: E_rate mean=-0.0240 (|max|=0.0400), flip=0.0240, dO_mean=-0.09700; W=0.75: E_rate mean=-0.0220 (|max|=0.0400), flip=0.0220, dO_mean=-0.08936; W=1.00: E_rate mean=-0.0150 (|max|=0.0400), flip=0.0150, dO_mean=-0.05980
+
+==============================================================================
+集計
+==============================================================================
+PASS  [RNG] RNG_BOUNDARY_STATIC
+PASS  [RNG] RNG_CONSUMED_AFTER_WORLD
+PASS  [ISO] WORLD_UNCHANGED_AFTER_ARMS
+PASS  [ISO] WORLD_ARRAYS_FROZEN
+PASS  [W0] W0_BIT_IDENTICAL
+PASS  [W0] W0_CHECK_IS_DISCRIMINATING
+PASS  [SYS] ABL_SYS_BITWISE_AND_ZERO_EFFECT
+PASS  [SNS] ABL_SNS_R_CLOSED_FORM
+PASS  [SNS] SNS_CHECK_IS_DISCRIMINATING
+PASS  [REACT] ABL_REACT_SATURATES_NOT_ATTENUATES
+PASS  [REACT] REACT_SATURATION_IS_RESIDUAL
+PASS  [MUT] ABLATION_TOUCHES_ONLY_TARGET_PATH
+PASS  [MUT] PARAMS_NOT_MUTATED
+PASS  [RNG2] EFFECT_MEASURABLE_AT_W_GT_0
+
+合計 14 項目: PASS 14 / FAIL 0

@@ -1,0 +1,62 @@
+{
+  "run_id": "run_20261003_111632_a607",
+  "schema_version": 1,
+  "status": "completed",
+  "config": {
+    "model": {
+      "S": 2.0,
+      "k_react": 1.0,
+      "T_max": 500,
+      "T_min": 10,
+      "eps": 0.0001
+    },
+    "network": {
+      "n": 100,
+      "k": 4,
+      "p": 0.15,
+      "max_tries": 100
+    },
+    "init_opinion": {
+      "mean": 0.5,
+      "std": 0.1
+    },
+    "personas": {
+      "table": "persona_A",
+      "concentration_nu": 10.0,
+      "table_path": "/home/manaka/jasmin_sns/configs/persona_A.yaml"
+    },
+    "experiment": {
+      "master_seed_start": 0,
+      "n_seeds": 30,
+      "W_values": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "ablation_conditions": [
+        "none",
+        "ABL-SYS",
+        "ABL-SNS",
+        "ABL-REACT"
+      ]
+    },
+    "stopping": {
+      "update_mode": "gauss_seidel"
+    },
+    "metrics": {
+      "theta": 0.5,
+      "bootstrap_B": 2000,
+      "bootstrap_seed": 12345
+    },
+    "logging": {
+      "log_every": 1,
+      "debug_terms": false
+    },
+    "warnings": [],
+    "source_path": "configs/default.yaml"
+  },
+  "warnings": [],
+  "failed_pairs": []
+}

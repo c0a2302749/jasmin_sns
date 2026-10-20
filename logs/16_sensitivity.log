@@ -1,0 +1,38 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/default.yaml
+uncommitted:
+M scripts/analyze_dose_response.py
+ M scripts/select_persona.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/run/checks.py
+ M src/run/metrics.py
+?? scripts/analyze_ci_emaj.py
+?? scripts/check_emaj_rates.py
+?? scripts/compare_crn.py
+?? scripts/diagnose_beta0.py
+?? scripts/negative_controls.py
+?? scripts/retest_peak.py
+?? scripts/runlog.py
+?? scripts/sensitivity.py
+?? scripts/verify_fj.py
+?? tests/test_remaining.py
+seeds=0..29 (30)
+------------------------------------------------------------------------------------------------
+==============================================================================================================
+感度分析: seeds=0..29 (30) W=(0.5, 1.0)
+基準: E_rate(0.5)<0 の向き + ABL-SYS ゼロ + 非単調(対ペア差が負に有意)
+==============================================================================================================
+  条件          E(0.5)    E(1.0)    向き負?  非単調?  d=E.5-E1.0 [95%CI]       ABL-SYSゼロ?
+  k_react=0.0   -0.02800  -0.02900  Y      n       +0.00100 [+0.00000,+0.00233]  Y
+  k_react=0.5   -0.02633  -0.02233  Y      Y       -0.00400 [-0.00733,-0.00133]  Y
+  k_react=1.0   -0.02567  -0.01633  Y      Y       -0.00933 [-0.01333,-0.00567]  Y
+  k_react=1.5   -0.02467  -0.01167  Y      Y       -0.01300 [-0.01633,-0.00967]  Y
+  k_react=2.0   -0.02400  -0.00933  Y      Y       -0.01467 [-0.01800,-0.01133]  Y
+  S=1.0         -0.05200  -0.03500  Y      Y       -0.01700 [-0.02067,-0.01333]  Y
+  S=1.5         -0.03633  -0.02267  Y      Y       -0.01367 [-0.01700,-0.01033]  Y
+  S=2.0         -0.02567  -0.01633  Y      Y       -0.00933 [-0.01333,-0.00567]  Y
+  S=2.5         -0.01867  -0.01000  Y      Y       -0.00867 [-0.01267,-0.00500]  Y
+  O0mean=0.3    -0.00033  -0.00033  Y      n       +0.00000 [+0.00000,+0.00000]  Y
+  O0mean=0.5    -0.02567  -0.01633  Y      Y       -0.00933 [-0.01333,-0.00567]  Y
+  O0mean=0.7    -0.21533  -0.10933  Y      Y       -0.10600 [-0.11567,-0.09633]  Y

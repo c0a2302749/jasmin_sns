@@ -1,0 +1,45 @@
+commit=6bad531585861b5778ecc861063917447e0a1a81 DIRTY
+config=configs/default.yaml
+uncommitted:
+M configs/default.yaml
+ M configs/default_W6.yaml
+ A scripts/aggregate_sens.py
+ A scripts/analyze_ci_emaj.py
+ M scripts/analyze_dose_response.py
+ A scripts/check_emaj_rates.py
+ A scripts/compare_crn.py
+ A scripts/decompose_effect.py
+ A scripts/diagnose_beta0.py
+ A scripts/negative_controls.py
+ A scripts/retest_peak.py
+ A scripts/runlog.py
+ M scripts/select_persona.py
+ A scripts/sensitivity.py
+ A scripts/verify_fj.py
+ M scripts/verify_invariants.py
+ M src/analysis/persona_select.py
+ M src/analysis/stats.py
+ M src/config.py
+ M src/run/checks.py
+ M src/run/metrics.py
+ M src/world/ablation.py
+ A tests/test_remaining.py
+ M tests/test_world.py
+?? configs/MAIN_EXPERIMENT_NOTE.txt
+?? configs/main_o0_080.yaml
+?? scripts/b1_contribution.py
+?? scripts/select_main_experiment.py
+B1 mu=0.8 W*=0.6 seeds=0..29 B=10000
+------------------------------------------------------------------------------------------------
+================================================================================================
+B1. 観測変化への介入寄与  設定: O0平均=0.8, W*=0.6, seeds=0..29 (30)
+================================================================================================
+  賛成率: 初期=0.9987  ctrl=0.4913  treat=0.2803
+  O_mean: 初期=0.8029  ctrl=0.4778  treat=0.3109
+  E_rate(平均)=-0.21100
+  観測変化(treat最終-初期)=-0.7183  [95%CI -0.7297,-0.7070]
+  寄与割合 E_rate/観測変化 = 0.2925 (シード毎平均。95%CI 0.2796,0.3053)
+  平均ベースの寄与 = 0.2937
+  参考 O_mean: (treat-ctrl)/(treat-初期) = 0.3394
+
+  残り 0.7063 は参加者内部と社会的影響による変化。
